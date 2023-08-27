@@ -102,8 +102,8 @@ export function isInIntervals(intervals:number[][], number:number) : boolean {
     return intervals.some(interval => isInInterval(interval, number));
 }
 
-export function range(start:number, end:number) : number[] {
-    return Array.from({length: (end - start)}, (v, k) => k + start);
+export function range(start:number, end:number, step: number = 1) : number[] {
+    return Array.from({length: Math.floor((end - start)/step)}, (v, k) => (k*step) + start);
 }
 
 export function expand(coor1: number[], coor2: number[]) : number[][] {
