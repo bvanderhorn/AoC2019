@@ -19,9 +19,24 @@ var execute = (program: number[], index: number): boolean => {
     return true;
 }
 
-var program = h.read(2, "program.txt",)[0].split(',').tonum();
-program[1] = 12;
-program[2] = 2;
-for (const i of h.range(0, program.length, 4)) if (!execute(program, i)) break;
+var run = (program: number[], noun: number, verb: number): number => {
+    var current = program.copy();
+    current[1] = noun;
+    current[2] = verb;
+    for (const i of h.range(0, current.length, 4)) if (!execute(current, i)) break;
+    return current[0];
+}
 
-h.print("part 1:", program[0]);
+var searchInputSpace = (program:number[], target:number) : [number,number] {
+    for (const noun of h.range(0,100)) for (const verb of h.range(0,100)) {
+            if (run(program, noun, verb) == target) return [noun,verb];
+        }
+    
+    throw new Error("no solution found");
+}
+
+var program = h.read(2, "program.txt",)[0].split(',').tonum();
+
+h.print("part 1:", run(program, 12, 2));
+var [noun,verb] = searchInputSpace(program, 19690720);
+h.print("part 2:", 100 * noun + verb);
