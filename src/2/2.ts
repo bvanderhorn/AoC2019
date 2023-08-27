@@ -27,10 +27,10 @@ var run = (program: number[], noun: number, verb: number): number => {
     return current[0];
 }
 
-var searchInputSpace = (program:number[], target:number) : [number,number] {
+var searchInputSpace = (program:number[], target:number) : [number,number] => {
     for (const noun of h.range(0,100)) for (const verb of h.range(0,100)) {
-            if (run(program, noun, verb) == target) return [noun,verb];
-        }
+        if (run(program, noun, verb) == target) return [noun,verb];
+    }
     
     throw new Error("no solution found");
 }
