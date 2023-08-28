@@ -60,6 +60,7 @@ declare global {
         subfilter(matches: (x: any) => boolean) : any[][];
         transpose() : any[][];
         rotate(quarts:number) : any[][];
+        toSet() : Set<T>;
 
         print() : void;
         print(j1:string) : void;
@@ -86,6 +87,10 @@ declare global {
     interface String {
         get(index: number) : string;
         slice2(start:number, end:number) : string;
+    }
+
+    interface Set<T> {
+        toList() : T[];
     }
 }
 
@@ -700,6 +705,30 @@ if (!Array.prototype.prod) {
         configurable: false, 
         value: function prod(this: number[]): number {
             return this.reduce((a:number,b:number) => a*b);
+        }
+    });
+}
+
+if (!Array.prototype.toSet) {
+    // convert to set
+    Object.defineProperty(Array.prototype, 'toSet', {
+        enumerable: false, 
+        writable: false, 
+        configurable: false, 
+        value: function toSet<T>(this: T[]): Set<T> {
+            return new Set<T>(this);
+        }
+    });
+}
+
+if (!Set.prototype.toList) {
+    // convert to list
+    Object.defineProperty(Array.prototype, 'toList', {
+        enumerable: false, 
+        writable: false, 
+        configurable: false, 
+        value: function toList<T>(this: Set<T>): T[] {
+            return Array.from(this);
         }
     });
 }
