@@ -25,8 +25,12 @@ var crossings = corners[0].map((x,i) => { return corners[1].map((y,j) => {
     if(i>0 && j>0) return getCrossings([corners[0][i-1], x], [corners[1][j-1], y]).toList();
 })}).flat().filter(x => x!= undefined).flat().toSet();
 
+var distances = crossings.toList().map(x => eval(`[${x}]`).manhattan().sum());
+h.print("part 1:", distances.filter(d => d != 0).min());
+
 console.timeEnd("day 3");
 
 h.print(wires[0].slice(0,5));
 h.print(corners[0].slice(0,5));
 h.print(crossings.toList().slice(0,3));
+h.print(distances.slice(0,3));
