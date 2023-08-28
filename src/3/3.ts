@@ -10,20 +10,23 @@ var getCorners = (instructions: string[]): number[][] => {
     instructions.forEach(m => move(wire, m));
     return wire;
 }
-var getCrossings = (line1: number[][], line2: number[][]): string[] => {
-    var coor1 = h.expand(line1[0], line1[1]);
-    var coor2 = h.expand(line2[0], line2[1]);
-    return coor1.filter(x => coor2.includes2(x)).map(x => x.toString());
+var getCrossings = (line1: number[][], line2: number[][]): Set<string> => {
+    var coor1 = h.expand(line1[0], line1[1]).map(x => x.toString()).toSet();
+    var coor2 = h.expand(line2[0], line2[1]).map(x => x.toString()).toSet();
+    coor1.forEach(x => coor2.has(x) ? undefined : coor1.delete(x));
+    return coor1;
 }
 
+// execute 
+console.time("day 3");
 var wires = h.read(3, "wires.txt").split(',');
 var corners = wires.map(getCorners);
-var crossings = corners[0].map((x,i) => { corners[1].map((y,j) => {
-    if (i ==0 || j == 0) return;
-    return getCrossings([corners[0][i-1], x], [corners[1][j-1], y]);
-})}).flat().filter(x => x != undefined).toSet();
+var crossings = corners[0].map((x,i) => { corners[1].map((y,j) => { 
+    if(i>0 && j>0) return getCrossings([corners[0][i-1], x], [corners[1][j-1], y])
+})}).filter(x => x != undefined); //.flat().filter(x => x != undefined).toSet();
+
+console.timeEnd("day 3");
 
 h.print(wires[0].slice(0,5));
 h.print(corners[0].slice(0,5));
-h.print(crossings.toList().slice(0,5));
-h.print(crossings.toList().length);
+h.print(crossings.slice(0,3));
