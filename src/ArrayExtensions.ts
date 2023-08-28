@@ -90,7 +90,7 @@ declare global {
     }
 
     interface Set<T> {
-        toList() : T[];
+        toList<T>() : T[];
     }
 }
 
@@ -723,7 +723,7 @@ if (!Array.prototype.toSet) {
 
 if (!Set.prototype.toList) {
     // convert to list
-    Object.defineProperty(Array.prototype, 'toList', {
+    Object.defineProperty(Set.prototype, 'toList', {
         enumerable: false, 
         writable: false, 
         configurable: false, 

@@ -17,16 +17,16 @@ var getCrossings = (line1: number[][], line2: number[][]): Set<string> => {
     return coor1;
 }
 
-// execute 
+// execute
 console.time("day 3");
 var wires = h.read(3, "wires.txt").split(',');
 var corners = wires.map(getCorners);
-var crossings = corners[0].map((x,i) => { corners[1].map((y,j) => { 
-    if(i>0 && j>0) return getCrossings([corners[0][i-1], x], [corners[1][j-1], y])
-})}).filter(x => x != undefined); //.flat().filter(x => x != undefined).toSet();
+var crossings = corners[0].map((x,i) => { return corners[1].map((y,j) => { 
+    if(i>0 && j>0) return getCrossings([corners[0][i-1], x], [corners[1][j-1], y]).toList();
+})}).flat().filter(x => x!= undefined).flat().toSet();
 
 console.timeEnd("day 3");
 
 h.print(wires[0].slice(0,5));
 h.print(corners[0].slice(0,5));
-h.print(crossings.slice(0,3));
+h.print(crossings.toList().slice(0,3));
