@@ -11,10 +11,27 @@ var getCorners = (instructions: string[]): number[][] => {
     return wire;
 }
 var getCrossings = (line1: number[][], line2: number[][]): Set<string> => {
-    var coor1 = h.expand(line1[0], line1[1]).map(x => x.toString()).toSet();
-    var coor2 = h.expand(line2[0], line2[1]).map(x => x.toString()).toSet();
-    coor1.forEach(x => coor2.has(x) ? undefined : coor1.delete(x));
-    return coor1;
+    var dx1 = [line1[0][0], line1[1][0]].sort();
+    var dx2 = [line2[0][0], line2[1][0]].sort();
+    var dy1 = [line1[0][1], line1[1][1]].sort();
+    var dy2 = [line2[0][1], line2[1][1]].sort();
+
+    if (h.overlaps(dx1, dx2) && h.overlaps(dy1, dy2)) {
+        var xmin = [dx1[0], dx2[0]].max();
+        var xmax = [dx1[1], dx2[1]].min();
+        var ymin = [dy1[0], dy2[0]].max();
+        var ymax = [dy1[1], dy2[1]].min();
+
+        return getCoordinates(xmin, xmax, ymin, ymax).map(x => x.toString()).toSet();
+    }
+
+    return new Set<string>();
+}
+
+var getCoordinates = (xmin: number, xmax:number, ymin:number, ymax:number): number[][] => {
+    var out = [];
+    for (const x of h.range(xmin, xmax+1)) for (const y of h.range(ymin, ymax+1)) out.push([x,y]);
+    return out;
 }
 
 // execute
