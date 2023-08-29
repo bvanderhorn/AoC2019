@@ -1,5 +1,9 @@
 import * as h from '../helpers';
 
+type Crossing = {
+    coor: [number, number]
+    steps: [number, number]
+}
 var dirs = new Map<string, number[]>([[ 'U', [0, 1]], ['D', [0, -1]], ['L', [-1, 0]], ['R', [1, 0]]]);
 var move = (wire: number[][], instruction: string): void => {
     var [dir, step] = [instruction[0], parseInt(instruction.slice(1))];
@@ -40,11 +44,39 @@ var corners = wires.map(getCorners);
 var crossingStrings = corners[0].map((x,i) => { return corners[1].map((y,j) => { 
     if(i>0 && j>0) return getCrossings([corners[0][i-1], x], [corners[1][j-1], y]).toList();
 })}).flat().filter(x => x!= undefined).flat().toSet();
-
-var crossings = crossingStrings.toList().map(x => eval(`[${x}]`));
+var crossings : Crossing[] = crossingStrings.toList().map(x => {
+    return {coor: eval(`[${x}]`), steps: [-1,-1]};
+});
+var crossingOnIndex = (coor: [number,number], line: number[][]) : number => {
+    var [xl, yl] = [ [line[0][0], line[1][0]], [line[0][1], line[1][1]] ];
+    var [x, y] = coor;
+    if (x <= xl.max() && x >= xl.min() && y <= yl.max() && y >= yl.min()) {
+        return Math.abs(x - line[0][0]) + Math.abs(y - line[0][1]);
+    }
+    return -1;
+}
+var lineSteps = (line: number[][]) : number => {
+    return Math.abs(line[0][0] - line[1][0]) + Math.abs(line[0][1] - line[1][1]);
+}
 
 // part 1
-var distances = crossings.map(x => x.manhattan().sum());
+var distances = crossings.map(x => x.coor.manhattan().sum());
 h.print("part 1:", distances.filter(d => d != 0).min());
 
 // part 2
+corners.forEach((c, i) => {
+    var steps = 0;
+    for (const j of h.range(0, c.length-1)) {
+        var line = [c[j], c[j+1]];
+        for (const crossing of crossings.filter(x => x.steps[i] == -1)) {
+            var s = crossingOnIndex(crossing.coor, line);
+            if (s != -1) crossing.steps[i] = steps + s;
+        }
+        steps += lineSteps(line);
+    }
+})
+
+var lowestSteps : Crossing = crossings.filter(x => x.steps[0] > 0 && x.steps[1] > 0).sort( (a,b) => a.steps.sum() - b.steps.sum() )[0];
+h.print("part 2:");
+h.print(" lowest crossing:", lowestSteps);
+h.print(" steps:", lowestSteps.steps.sum());
