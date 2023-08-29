@@ -74,7 +74,7 @@ export function isDivisible(num:number, div:number){
 
 export function overlaps(interval1:number[], interval2:number[]) : boolean {
     // check if two intervals overlap
-    return interval1[0]<=interval2[1] && interval1[1]>=interval2[0]; 
+    return interval1.min() <= interval2.max() && interval1.max() >= interval2.min(); 
 }
 
 export function mergeIntervals(intervals: number[][]) : number[][] {
