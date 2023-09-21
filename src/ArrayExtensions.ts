@@ -43,6 +43,7 @@ declare global {
         shared(array: any[]) : any[];
         get(index: number) : any;
         slice2(start:number, end:number) : any[];
+        slice2(start:number) : any[];
         last(): any;
         min(): number;
         max(): number;
@@ -607,7 +608,11 @@ if (!Array.prototype.slice2) {
         writable: false,
         configurable: false,
         value: function slice2(this: any[], start:number, end:number = this.length): any[] {
-            return this.slice((start % this.length + this.length) % this.length, (end % this.length + this.length) % this.length);
+            var realStart = (start % this.length + this.length) % this.length;
+            var realEnd = (end % this.length + this.length) % this.length;
+            return realEnd == 0 
+                ? this.slice(realStart) 
+                : this.slice(realStart, realEnd);
         }
     });
 }
