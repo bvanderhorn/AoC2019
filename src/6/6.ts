@@ -1,29 +1,16 @@
 import * as h from '../helpers';
 
-var orbits = h.read(6, "orbits.txt").split(')');
-
-var orbitMap = new Map<string,string[]>();
-for (const orbit of orbits){
-    var [a,b] = orbit;
-    if (!orbitMap.has(a)) orbitMap.set(a,[b]);
-    else orbitMap.get(a)!.push(b);
-}
-
-var subjectsLeft = orbits.map( x=> x[1]);
-var current = ["COM"];
-var next: string[] = [];
-var totalOrbits = 0;
-var orbitMultiplier = 1;
-while(subjectsLeft.length > 0){
-    for (const subject of current){
-        var upcoming = orbitMap.get(subject) ?? [];
-        totalOrbits += orbitMultiplier*upcoming.length;
-        next = next.concat(upcoming);
+var getOrbits = (subject:string) : number => {
+    var orbits = 0;
+    while (orbitMap.has(subject)){
+        subject = orbitMap.get(subject)!;
+        orbits++;
     }
-    subjectsLeft = subjectsLeft.filter(x => !current.includes(x));
-    current = next;
-    next = [];
-    orbitMultiplier++;
+    return orbits;
 }
 
-h.print("part 1:", totalOrbits);
+var orbits = h.read(6, "orbits.txt").split(')');
+var orbitMap = new Map<string,string>();
+orbits.map(x => orbitMap.set(x[1],x[0]));
+var subjects = orbits.map( x=> x[1]);
+h.print("part 1:", subjects.map(getOrbits).sum());
