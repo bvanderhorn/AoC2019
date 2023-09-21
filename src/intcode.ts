@@ -25,6 +25,22 @@ export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, i
             h.print(a);
             index.i += 2;
             break;
+        case 5:
+            if (a != 0) index.i = b;
+            else index.i += 3;
+            break;
+        case 6:
+            if (a == 0) index.i = b;
+            else index.i += 3;
+            break;
+        case 7:
+            program[c0] = a < b ? 1 : 0;
+            index.i += 4;
+            break;
+        case 8:
+            program[c0] = a == b ? 1 : 0;
+            index.i += 4;
+            break;
         case 99:
             halt.h = true;
             break;
