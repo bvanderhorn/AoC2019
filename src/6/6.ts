@@ -25,7 +25,7 @@ var commonAncestor = (a:string, b:string) : string => {
 }
 var orbitalDistance = (a:string, b:string) : number => {
     var ancestor = commonAncestor(a,b);
-    return getOrbits(a) + getOrbits(b) - 2 * getOrbits(ancestor);
+    return getOrbits(a) + getOrbits(b) - 2 * getOrbits(ancestor) - 2;
 }
 
 var orbits = h.read(6, "orbits.txt").split(')');
