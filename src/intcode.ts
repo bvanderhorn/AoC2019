@@ -1,6 +1,7 @@
 import * as h from './helpers';
 
-export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, input: number[], inputIndex: {ii:number}, output: number[] = []) => {
+export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, input: number, output: number[] = []) : boolean => {
+    // executes one instruction and returns if input was consumed
     var [opm, a0, b0, c0] = program.slice(index.i, index.i + 4);
     // h.print('index ',index, ':', opm, a0, b0, c0 );
 
@@ -18,10 +19,9 @@ export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, i
             index.i += 4;
             break;
         case 3:
-            program[a0] = input[inputIndex.ii];
+            program[a0] = input;
             index.i += 2;
-            inputIndex.ii++;
-            break;
+            return true;
         case 4:
             // h.print(a);
             output.push(a);
@@ -49,15 +49,17 @@ export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, i
         default:
             throw new Error("invalid opcode");
     }
+    return false;
 }
 
 export var run = (program: number[], input: number[] = []): number[] => {
     var index = {i:0};
     var halt = {h:false};
-    var inputIndex = {ii: 0};
+    var inputIndex = 0;
     var output:number[] = [];
     while(true) {
-        execute(program, index, halt, input, inputIndex, output);
+        var consumed = execute(program, index, halt, input[inputIndex], output);
+        if (consumed) inputIndex++;
         if (halt.h) break;
     }
     return output;
