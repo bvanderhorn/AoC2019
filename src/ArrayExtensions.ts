@@ -115,6 +115,7 @@ if(!Array.prototype.string) {
 	writable:false,
 	configurable: false,
 	value: function string(this: any[][], j1:string = '',j2:string='\n', sub: number|number[] = 0) : string {
+            if (typeof(this[0]) != 'object') return this.join(j1);
             if (sub == 0) return this.map(l=> l.join(j1)).join(j2);
             if (typeof sub == 'number') return this.slice(0,sub).map(l=> l.slice(0,sub).join(j1)).join(j2);
             return this.slice(0,sub[0]).map(l=> l.slice(0,sub[1]).join(j1)).join(j2);

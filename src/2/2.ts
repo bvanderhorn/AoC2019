@@ -5,7 +5,8 @@ var customRun = (program: number[], noun:number, verb:number): number => {
     var current = program.copy();
     current[1] = noun;
     current[2] = verb;
-    return ic.run(current);
+    ic.run(current);
+    return current[0];
 }
 
 var searchInputSpace = (program:number[], target:number) : [number,number] => {

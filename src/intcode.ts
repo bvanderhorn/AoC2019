@@ -1,6 +1,6 @@
 import * as h from './helpers';
 
-export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, input: number[], inputIndex: {ii:number}) => {
+export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, input: number[], inputIndex: {ii:number}, output: number[] = []) => {
     var [opm, a0, b0, c0] = program.slice(index.i, index.i + 4);
     // h.print('index ',index, ':', opm, a0, b0, c0 );
 
@@ -23,7 +23,8 @@ export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, i
             inputIndex.ii++;
             break;
         case 4:
-            h.print(a);
+            // h.print(a);
+            output.push(a);
             index.i += 2;
             break;
         case 5:
@@ -50,14 +51,14 @@ export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, i
     }
 }
 
-export var run = (program: number[], input: number[] = []): number => {
-    var current = program.copy();
+export var run = (program: number[], input: number[] = []): number[] => {
     var index = {i:0};
     var halt = {h:false};
     var inputIndex = {ii: 0};
+    var output:number[] = [];
     while(true) {
-        execute(current, index, halt, input, inputIndex);
+        execute(program, index, halt, input, inputIndex, output);
         if (halt.h) break;
     }
-    return current[0];
+    return output;
 }
