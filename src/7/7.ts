@@ -2,9 +2,9 @@ import * as h from '../helpers';
 import * as ic from '../intcode';
 
 var customRun = (program: number[], phase:number[]) : number => {
-    var output:number[] = [0];
-    for (const p of phase) output.push(ic.run(program.copy(), [p, output.last()])[0]);
-    return output.last();
+    var output = 0;
+    for (const p of phase) output = ic.run(program.copy(), [p, output])[0];
+    return output;
 }
 
 var program = h.read(7, "program.txt",)[0].split(',').tonum();
