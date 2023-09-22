@@ -62,6 +62,7 @@ declare global {
         transpose() : any[][];
         rotate(quarts:number) : any[][];
         toSet() : Set<T>;
+        permutations() : any[][];
 
         print() : void;
         print(j1:string) : void;
@@ -723,6 +724,27 @@ if (!Array.prototype.toSet) {
         configurable: false, 
         value: function toSet<T>(this: T[]): Set<T> {
             return new Set<T>(this);
+        }
+    });
+}
+
+if (!Array.prototype.permutations) {
+    // return all permutations of an array
+    Object.defineProperty(Array.prototype, 'permutations', {
+        enumerable: false,
+        writable: false,
+        configurable: false,
+        value: function permutations(this: any[]): any[][] {
+            if (this.length == 1) return [this];
+            var perms:any[][] = [];
+            for (let i=0;i<this.length;i++) {
+                var sub = this.slice(0,i).concat(this.slice(i+1));
+                var subperms = sub.permutations();
+                for (let j=0;j<subperms.length;j++) {
+                    perms.push([this[i]].concat(subperms[j]));
+                }
+            }
+            return perms;
         }
     });
 }
