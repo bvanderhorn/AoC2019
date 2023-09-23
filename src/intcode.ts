@@ -26,7 +26,7 @@ export var getInstruction = (program: number[], index: number, verbose = false) 
 
 export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, input: number, verbose: boolean = false) : number|undefined => {
     // executes one instruction and returns if input was consumed
-    var {op, modes, params, roughParams} = getInstruction(program, index.i);
+    var {op, modes, params, roughParams} = getInstruction(program, index.i, verbose);
     var [a, b, c] =  params;
     var [a0, b0, c0] = roughParams;
 
@@ -90,8 +90,7 @@ export var run = (program: number[], input: number[] = []): number[] => {
     while(true) {
         var curOutput = execute(program, index, halt, input[inputIndex]);
         if (curOutput != undefined) output.push(curOutput);
-        var consumed = isConsumed(program, index.i);
-        if (consumed) inputIndex++;
+        if (isConsumed(program, index.i)) inputIndex++;
         if (halt.h) break;
     }
     return output;
