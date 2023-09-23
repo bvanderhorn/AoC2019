@@ -7,7 +7,7 @@ export type Instruction = {
     roughParams: number[]
 }
 
-export var isConsumed = (program: number[], index: number) : boolean => {
+export var needsInput = (program: number[], index: number) : boolean => {
     var {op, modes, params, roughParams} = getInstruction(program, index);
     return op == 3;
 }
@@ -82,15 +82,15 @@ export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, i
     }
 }
 
-export var run = (program: number[], input: number[] = []): number[] => {
+export var run = (program: number[], input: number[] = [], verbose:boolean = false): number[] => {
     var index = {i:0};
     var halt = {h:false};
     var inputIndex = 0;
     var output:number[] = [];
     while(true) {
-        var curOutput = execute(program, index, halt, input[inputIndex]);
+        var curOutput = execute(program, index, halt, input[inputIndex], verbose);
         if (curOutput != undefined) output.push(curOutput);
-        if (isConsumed(program, index.i)) inputIndex++;
+        if (needsInput(program, index.i)) inputIndex++;
         if (halt.h) break;
     }
     return output;
