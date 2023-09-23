@@ -16,13 +16,15 @@ type State = {
 }
 
 var initStates = (program: number[], phases:number[]) : State[] => {
-    return phases.map(p => ({
+    var states = phases.map(p => ({
         program: program.copy(),
         index: {i:0},
         input: [p],
         halt: {h:false},
         awaitingInput: false
     }));
+    states[0].input.push(0);
+    return states;
 }
 var runStateTillInputNeededOrHalt = (state: State) : number[] => {
     var output:number[] = [];
@@ -40,7 +42,7 @@ var runStateTillInputNeededOrHalt = (state: State) : number[] => {
 }
 var nextAmpIndex = (ampIndex: number) : number => ampIndex == 4 ? 0 : ampIndex + 1;
 
-var runFeedback = (states: State[]) : void => {
+var runFeedback = (states: State[]) : number => {
     var ampIndex = 0;
     while (states.some(s => !s.halt.h)) {
         if (states[ampIndex].awaitingInput || states[ampIndex].halt.h) {
@@ -51,24 +53,20 @@ var runFeedback = (states: State[]) : void => {
         var nextState = states[nextAmpIndex(ampIndex)];
         nextState.input.push(...output);
         if (nextState.awaitingInput || nextState.input.length > 0) nextState.awaitingInput = false;
+        // h.print(stringifyStates(states));
         ampIndex = nextAmpIndex(ampIndex);
     }
+    return states.map(s => s.input).flat()[0];
 }
 
-var stringifyState = (state: State) : string => {
+var stringifyState = (state: State) : any => {
     return {program: JSON.stringify(state.program), index: state.index.i, input: JSON.stringify(state.input), halt: state.halt.h, awaitingInput: state.awaitingInput};
 }
 var stringifyStates = (states: State[]) : string => h.stringify(states.map(stringifyState));
 
-
-var program = h.read(7, "program.txt", "ex")[0].split(',').tonum();
+var program = h.read(7, "program.txt")[0].split(',').tonum();
 var phases: number[][] = [0,1,2,3,4].permutations();
-// h.print("part 1:", phases.map(p => multiRun(program.copy(), p)).max());
+h.print("part 1:", phases.map(p => multiRun(program.copy(), p)).max());
 
-// part 2
 var phases2: number[][] = [5,6,7,8,9].permutations();
-var states = initStates(program, phases2[0]);
-// runFeedback(states);
-h.print(stringifyStates(states));
-// h.print("test: ", test);
-// h.print("part 2:", allPhases.map(p => multiRun(program.copy(), p, 2, run1)).max());
+h.print("part 2:", phases2.map(x => runFeedback(initStates(program, x))).max());
