@@ -41,10 +41,7 @@ var runFeedback = (states: ic.State[]) : number => {
     return states.map(s => s.input).flat()[0];
 }
 
-var stringifyState = (state: ic.State) : any => {
-    return {program: JSON.stringify(state.program), index: state.index, input: JSON.stringify(state.input), halt: state.halt, awaitingInput: state.awaitingInput};
-}
-var stringifyStates = (states: ic.State[]) : string => h.stringify(states.map(stringifyState));
+var stringifyStates = (states: ic.State[]) : string => h.stringify(states.map(s => s.simplify()));
 
 var program = h.read(7, "program.txt")[0].split(',').tonum();
 var phases: number[][] = [0,1,2,3,4].permutations();

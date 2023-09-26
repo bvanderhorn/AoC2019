@@ -108,4 +108,12 @@ export class State {
         }
         return output;
     }
+
+    public simplify = () : any => {
+        return {program: JSON.stringify(this.program), index: this.index, input: JSON.stringify(this.input), halt: this.halt, awaitingInput: this.awaitingInput};
+    }
+
+    public print = () : void => {
+        h.print(h.stringify(this.simplify()));
+    }
 }
