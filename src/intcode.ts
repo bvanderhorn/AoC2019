@@ -15,12 +15,14 @@ export class State {
     public index: number;
     public input: number[];
     public halt: boolean;
+    public relativeBase: number = 0;
     
     constructor(program: number[], input: number[] = []) {
         this.program = program;
         this.index = 0;
         this.input = input;
         this.halt = false;
+        this.relativeBase = 0;
     }
 
     public get awaitingInput(): boolean {
@@ -33,9 +35,18 @@ export class State {
     
         var op:number = +`0${opm.toString()}`.split('').slice2(-2).join('');
         var modes:number[] = `0000${opm.toString()}`.split('').slice2(0,-2).map((m:string) => +m).reverse();
-        var [a,b,c] = [a0, b0, c0].map((n:number,i:number) => modes[i] == 1 ? n : this.program[n]);
+        var [a,b,c] = [a0, b0, c0].map((n:number,i:number) => this.getValue(modes[i], n));
     
         return {op,a,b,c,a0,b0,c0};
+    }
+
+    private getValue = (mode:number, value:number) : number => {
+        switch (mode) {
+            case 0: return this.program[value];
+            case 1: return value;
+            case 2: return this.program[value + this.relativeBase];
+            default: throw new Error("invalid mode");
+        }
     }
 
     public execute = (verbose: boolean = false) : number|undefined => {
@@ -89,6 +100,11 @@ export class State {
                 this.program[c0] = a == b ? 1 : 0;
                 this.index += 4;
                 h.printVerbose(verbose, `program[${c0}] = ${a} == ${b} ? 1 : 0 => ${this.program[c0]}, index += 4 => ${this.index}`)
+                break;
+            case 9:
+                this.relativeBase += a;
+                this.index += 2;
+                h.printVerbose(verbose, `relativeBase += ${a} => ${this.relativeBase}, index += 2 => ${this.index}`)
                 break;
             case 99:
                 this.halt = true;
