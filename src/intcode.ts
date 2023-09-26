@@ -98,15 +98,14 @@ export class State {
                 throw new Error("invalid opcode");
         }
     }
-}
 
-export var run = (program: number[], input: number[] = [], verbose:boolean = false): number[] => {
-    var state = new State(program, input);
-    var output:number[] = [];
-    while(true) {
-        var curOutput = state.execute(verbose);
-        if (curOutput != undefined) output.push(curOutput);
-        if (state.halt) break;
+    public run = (verbose:boolean = false): number[] => {
+        var output:number[] = [];
+        while(true) {
+            var curOutput = this.execute(verbose);
+            if (curOutput != undefined) output.push(curOutput);
+            if (this.halt) break;
+        }
+        return output;
     }
-    return output;
 }

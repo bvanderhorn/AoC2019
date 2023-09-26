@@ -5,7 +5,7 @@ var multiRun = (program: number[], noun:number, verb:number): number => {
     var current = program.copy();
     current[1] = noun;
     current[2] = verb;
-    ic.run(current);
+    new ic.State(current, []).run();
     return current[0];
 }
 

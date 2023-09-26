@@ -3,7 +3,7 @@ import * as ic from '../intcode';
 
 var multiRun = (program: number[], phase:number[]) : number => {
     var output = 0;
-    for (const p of phase) output = ic.run(program.copy(), [p, output])[0];
+    for (const p of phase) output = (new ic.State(program.copy(), [p, output])).run()[0];
     return output;
 }
 
