@@ -7,9 +7,22 @@ export type Instruction = {
     roughParams: number[]
 }
 
-export var needsInput = (program: number[], index: number) : boolean => {
-    var {op, modes, params, roughParams} = getInstruction(program, index);
-    return op == 3;
+export class State {
+    public program: number[];
+    public index: number;
+    public input: number[];
+    public halt: boolean;
+    
+    constructor(program: number[], input: number[] = []) {
+        this.program = program.copy();
+        this.index = 0;
+        this.input = input;
+        this.halt = false;
+    }
+
+    public get awaitingInput(): boolean {
+        return getInstruction(this.program, this.index).op == 3 && this.input.length == 0;
+    }
 }
 
 export var getInstruction = (program: number[], index: number, verbose = false) : Instruction => {
@@ -24,58 +37,63 @@ export var getInstruction = (program: number[], index: number, verbose = false) 
     return {op, modes, params, roughParams};
 }
 
-export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, input: number, verbose: boolean = false) : number|undefined => {
+export var execute = (state:State, verbose: boolean = false) : number|undefined => {
     // executes one instruction and returns if input was consumed
-    var {op, modes, params, roughParams} = getInstruction(program, index.i, verbose);
+    var {op, modes, params, roughParams} = getInstruction(state.program, state.index, verbose);
     var [a, b, c] =  params;
     var [a0, b0, c0] = roughParams;
+    if (state.awaitingInput) {
+        h.printVerbose(verbose, `awaiting input => ${state.awaitingInput}`)
+        return undefined;
+    }
 
     switch (op) {
         case 1:
-            program[c0] = a + b;
-            index.i += 4;
-            h.printVerbose(verbose, `program[${c0}] = ${a} + ${b} => ${program[c0]}, index += 4 => ${index.i}`)
+            state.program[c0] = a + b;
+            state.index += 4;
+            h.printVerbose(verbose, `program[${c0}] = ${a} + ${b} => ${state.program[c0]}, index += 4 => ${state.index}`)
             break;
         case 2:
-            program[c0] = a * b;
-            index.i += 4;
-            h.printVerbose(verbose, `program[${c0}] = ${a} * ${b} => ${program[c0]}, index += 4 => ${index.i}`)
+            state.program[c0] = a * b;
+            state.index += 4;
+            h.printVerbose(verbose, `program[${c0}] = ${a} * ${b} => ${state.program[c0]}, index += 4 => ${state.index}`)
             break;
         case 3:
-            program[a0] = input;
-            index.i += 2;
-            h.printVerbose(verbose, `program[${a0}] = input => ${input}, index += 2 => ${index.i}`)
+            var input = state.input.shift() ?? -1;
+            state.program[a0] = input;
+            state.index += 2;
+            h.printVerbose(verbose, `program[${a0}] = input => ${input}, index += 2 => ${state.index}`)
             break;
         case 4:
             // h.print(a);
-            index.i += 2;
-            h.printVerbose(verbose, `output = ${a}, index += 2 => ${index.i}`)
+            state.index += 2;
+            h.printVerbose(verbose, `output = ${a}, index += 2 => ${state.index}`)
             return a;
         case 5:
-            var str =`index (${index.i}) = ${a} != 0 ? ${b} : index + 3 => `;
-            if (a != 0) index.i = b;
-            else index.i += 3;
-            h.printVerbose(verbose, str,index.i);
+            var str =`index (${state.index}) = ${a} != 0 ? ${b} : index + 3 => `;
+            if (a != 0) state.index = b;
+            else state.index += 3;
+            h.printVerbose(verbose, str,state.index);
             break;
         case 6:
-            var str =`index (${index.i}) = ${a} == 0 ? ${b} : index + 3 => `;
-            if (a == 0) index.i = b;
-            else index.i += 3;
-            h.printVerbose(verbose, str,index.i);
+            var str =`index (${state.index}) = ${a} == 0 ? ${b} : index + 3 => `;
+            if (a == 0) state.index = b;
+            else state.index += 3;
+            h.printVerbose(verbose, str,state.index);
             break;
         case 7:
-            program[c0] = a < b ? 1 : 0;
-            index.i += 4;
-            h.printVerbose(verbose, `program[${c0}] = ${a} < ${b} ? 1 : 0 => ${program[c0]}, index += 4 => ${index.i}`)
+            state.program[c0] = a < b ? 1 : 0;
+            state.index += 4;
+            h.printVerbose(verbose, `program[${c0}] = ${a} < ${b} ? 1 : 0 => ${state.program[c0]}, index += 4 => ${state.index}`)
             break;
         case 8:
-            program[c0] = a == b ? 1 : 0;
-            index.i += 4;
-            h.printVerbose(verbose, `program[${c0}] = ${a} == ${b} ? 1 : 0 => ${program[c0]}, index += 4 => ${index.i}`)
+            state.program[c0] = a == b ? 1 : 0;
+            state.index += 4;
+            h.printVerbose(verbose, `program[${c0}] = ${a} == ${b} ? 1 : 0 => ${state.program[c0]}, index += 4 => ${state.index}`)
             break;
         case 99:
-            halt.h = true;
-            h.printVerbose(verbose, `halt => ${halt.h}`)
+            state.halt = true;
+            h.printVerbose(verbose, `halt => ${state.halt}`)
             break;
         default:
             throw new Error("invalid opcode");
@@ -83,15 +101,12 @@ export var execute = (program: number[], index: {i:number}, halt: {h:boolean}, i
 }
 
 export var run = (program: number[], input: number[] = [], verbose:boolean = false): number[] => {
-    var index = {i:0};
-    var halt = {h:false};
-    var inputIndex = 0;
+    var state = new State(program, input);
     var output:number[] = [];
     while(true) {
-        var curOutput = execute(program, index, halt, input[inputIndex], verbose);
+        var curOutput = execute(state, verbose);
         if (curOutput != undefined) output.push(curOutput);
-        if (needsInput(program, index.i)) inputIndex++;
-        if (halt.h) break;
+        if (state.halt) break;
     }
     return output;
 }
