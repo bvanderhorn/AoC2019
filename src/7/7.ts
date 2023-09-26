@@ -18,7 +18,7 @@ var runStateTillInputNeededOrHalt = (state: ic.State) : number[] => {
         if (state.awaitingInput) {
             return output;
         }
-        var curOutput = ic.execute(state);
+        var curOutput = state.execute();
         if (curOutput != undefined) output.push(curOutput);
     }
     return output;
