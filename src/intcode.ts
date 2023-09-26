@@ -14,7 +14,7 @@ export class State {
     public halt: boolean;
     
     constructor(program: number[], input: number[] = []) {
-        this.program = program.copy();
+        this.program = program;
         this.index = 0;
         this.input = input;
         this.halt = false;
