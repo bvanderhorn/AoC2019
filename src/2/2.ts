@@ -5,8 +5,9 @@ var multiRun = (program: number[], noun:number, verb:number): number => {
     var current = program.copy();
     current[1] = noun;
     current[2] = verb;
-    new ic.State(current, []).run();
-    return current[0];
+    var state = new ic.State(current, []);
+    state.run();
+    return state.program.get(0)!;
 }
 
 var searchInputSpace = (program:number[], target:number) : [number,number] => {

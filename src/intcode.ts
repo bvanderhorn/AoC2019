@@ -11,14 +11,14 @@ export type Instruction = {
 }
 
 export class State {
-    public program: number[];
+    public program: Map<number, number> = new Map<number, number>();
     public index: number;
     public input: number[];
     public halt: boolean;
     public relativeBase: number = 0;
     
     constructor(program: number[], input: number[] = []) {
-        this.program = program;
+        program.map((n,i) => this.program.set(i, n));
         this.index = 0;
         this.input = input;
         this.halt = false;
@@ -30,7 +30,10 @@ export class State {
     }
 
     public getInstruction = (verbose = false) : Instruction => {
-        var [opm, a0, b0, c0] = this.program.slice(this.index, this.index + 4);
+        var [opm, a0, b0, c0] = [this.program.get(this.index)!, 
+            this.program.get(this.index+1)!, 
+            this.program.get(this.index+2)!, 
+            this.program.get(this.index+3)!];
         h.printVerbose(verbose,'index ',this.index, ':', opm, a0, b0, c0 );
     
         var op:number = +`0${opm.toString()}`.split('').slice2(-2).join('');
@@ -42,9 +45,9 @@ export class State {
 
     private getValue = (mode:number, value:number) : number => {
         switch (mode) {
-            case 0: return this.program[value];
+            case 0: return this.program.get(value)!;
             case 1: return value;
-            case 2: return this.program[value + this.relativeBase];
+            case 2: return this.program.get(value + this.relativeBase)!;
             default: throw new Error("invalid mode");
         }
     }
@@ -59,18 +62,18 @@ export class State {
     
         switch (op) {
             case 1:
-                this.program[c0] = a + b;
+                this.program.set(c0, a + b);
                 this.index += 4;
-                h.printVerbose(verbose, `program[${c0}] = ${a} + ${b} => ${this.program[c0]}, index += 4 => ${this.index}`)
+                h.printVerbose(verbose, `program[${c0}] = ${a} + ${b} => ${this.program.get(c0)}, index += 4 => ${this.index}`)
                 break;
             case 2:
-                this.program[c0] = a * b;
+                this.program.set(c0, a * b);
                 this.index += 4;
-                h.printVerbose(verbose, `program[${c0}] = ${a} * ${b} => ${this.program[c0]}, index += 4 => ${this.index}`)
+                h.printVerbose(verbose, `program[${c0}] = ${a} * ${b} => ${this.program.get(c0)}, index += 4 => ${this.index}`)
                 break;
             case 3:
                 var input = this.input.shift() ?? -1;
-                this.program[a0] = input;
+                this.program.set(a0,input);
                 this.index += 2;
                 h.printVerbose(verbose, `program[${a0}] = input => ${input}, index += 2 => ${this.index}`)
                 break;
@@ -92,14 +95,14 @@ export class State {
                 h.printVerbose(verbose, str,this.index);
                 break;
             case 7:
-                this.program[c0] = a < b ? 1 : 0;
+                this.program.set(c0 , a < b ? 1 : 0);
                 this.index += 4;
-                h.printVerbose(verbose, `program[${c0}] = ${a} < ${b} ? 1 : 0 => ${this.program[c0]}, index += 4 => ${this.index}`)
+                h.printVerbose(verbose, `program[${c0}] = ${a} < ${b} ? 1 : 0 => ${this.program.get(c0)}, index += 4 => ${this.index}`)
                 break;
             case 8:
-                this.program[c0] = a == b ? 1 : 0;
+                this.program.set(c0,a == b ? 1 : 0);
                 this.index += 4;
-                h.printVerbose(verbose, `program[${c0}] = ${a} == ${b} ? 1 : 0 => ${this.program[c0]}, index += 4 => ${this.index}`)
+                h.printVerbose(verbose, `program[${c0}] = ${a} == ${b} ? 1 : 0 => ${this.program.get(c0)}, index += 4 => ${this.index}`)
                 break;
             case 9:
                 this.relativeBase += a;
