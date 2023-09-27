@@ -30,10 +30,10 @@ export class State {
     }
 
     public getInstruction = (verbose = false) : Instruction => {
-        var [opm, a0, b0, c0] = [this.program.get(this.index)!, 
-            this.program.get(this.index+1)!, 
-            this.program.get(this.index+2)!, 
-            this.program.get(this.index+3)!];
+        var [opm, a0, b0, c0] = [this.program.get(this.index) ?? 0, 
+            this.program.get(this.index+1) ?? 0, 
+            this.program.get(this.index+2) ?? 0, 
+            this.program.get(this.index+3) ?? 0];
         h.printVerbose(verbose,'index ',this.index, ':', opm, a0, b0, c0 );
     
         var op:number = +`0${opm.toString()}`.split('').slice2(-2).join('');
@@ -45,9 +45,9 @@ export class State {
 
     private getValue = (mode:number, value:number) : number => {
         switch (mode) {
-            case 0: return this.program.get(value)!;
+            case 0: return this.program.get(value) ?? 0;
             case 1: return value;
-            case 2: return this.program.get(value + this.relativeBase)!;
+            case 2: return this.program.get(value + this.relativeBase) ?? 0;
             default: throw new Error("invalid mode");
         }
     }
