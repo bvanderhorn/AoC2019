@@ -39,6 +39,7 @@ export class State {
         var op:number = +`0${opm.toString()}`.split('').slice2(-2).join('');
         var modes:number[] = `0000${opm.toString()}`.split('').slice2(0,-2).map((m:string) => +m).reverse();
         var [a,b,c] = [a0, b0, c0].map((n:number,i:number) => this.getValue(modes[i], n));
+        [a0, b0, c0] = [a0, b0, c0].map((n:number,i:number) => this.getWriteIndex(modes[i], n));
     
         return {op,a,b,c,a0,b0,c0};
     }
@@ -49,6 +50,14 @@ export class State {
             case 1: return value;
             case 2: return this.program.get(value + this.relativeBase) ?? 0;
             default: throw new Error("invalid mode");
+        }
+    }
+
+    private getWriteIndex = (mode:number, value:number) : number => {
+        switch (mode) {
+            case 0: return value;
+            case 2: return value + this.relativeBase;
+            default: return -1;
         }
     }
 
