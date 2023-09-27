@@ -69,7 +69,7 @@ export function uniquea(array: number[][]) {
 }
 
 export function isDivisible(num:number, div:number){
-    return num/div === Math.floor(num/div);
+    return num % div === 0;
 }
 
 export function overlaps(interval1:number[], interval2:number[]) : boolean {
@@ -201,6 +201,23 @@ export function bin2hex(bin:string) : string {
 
 export function hex2bin(hex:string) : string {
     return parseInt(hex,16).toString(2);
+}
+
+export function getDivisors(num:number) : number[] {
+    var divisors:number[] = [];
+    for (let i=1;i<=Math.sqrt(num);i++) {
+        if (isDivisible(num,i)) {
+            divisors.push(i);
+            if (i != num/i) divisors.push(num/i);
+        }
+    }
+    return divisors;
+}
+
+export function getCommonDivisors(num1:number, num2:number) : number[] {
+    var divisors1 = getDivisors(num1);
+    var divisors2 = getDivisors(num2);
+    return divisors1.filter(d => divisors2.includes(d));
 }
 
 export class MultiMap<K,V> {
