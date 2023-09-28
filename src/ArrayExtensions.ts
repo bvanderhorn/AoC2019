@@ -63,6 +63,7 @@ declare global {
         rotate(quarts:number) : any[][];
         toSet() : Set<T>;
         permutations() : any[][];
+        removeFirstOccurrence(element: any) : void;
 
         print() : void;
         print(j1:string) : void;
@@ -95,6 +96,20 @@ declare global {
         toList<T>() : T[];
     }
 }
+
+if (!Array.prototype.removeFirstOccurrence) {
+    // remove first occurrence of element from array
+    Object.defineProperty(Array.prototype, 'removeFirstOccurrence', {
+        enumerable: false,
+        writable: false,
+        configurable: false,
+        value: function removeFirstOccurrence(this: any[], element: any) : void {
+            var index = this.indexOf(element);
+            if (index > -1) this.splice(index, 1);
+        }
+    });
+}
+
 
 if(!Array.prototype.print) {
 	// .string but then print the result

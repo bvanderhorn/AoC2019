@@ -218,10 +218,17 @@ export function factorize(num:number) : number[] {
     return factors;
 }
 
-export function getCommonDivisors(num1:number, num2:number) : number[] {
+export function getCommonFactors(num1:number, num2:number) : number[] {
     var divisors1 = factorize(num1);
     var divisors2 = factorize(num2);
-    return divisors1.filter(d => divisors2.includes(d));
+    var commonFactors:number[] = [];
+    for (const d of divisors1){
+        if (divisors2.includes(d)) {
+            commonFactors.push(d);
+            divisors2.splice(divisors2.indexOf(d),1);
+        };
+    }
+    return commonFactors;
 }
 
 export class MultiMap<K,V> {
