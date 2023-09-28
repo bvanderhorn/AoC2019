@@ -203,20 +203,24 @@ export function hex2bin(hex:string) : string {
     return parseInt(hex,16).toString(2);
 }
 
-export function getDivisors(num:number) : number[] {
-    var divisors:number[] = [];
-    for (let i=1;i<=Math.sqrt(num);i++) {
-        if (isDivisible(num,i)) {
-            divisors.push(i);
-            if (i != num/i) divisors.push(num/i);
+export function factorize(num:number) : number[] {
+    if (num == 1) return [1];
+    var factors:number[] = [];
+    var rem = num;
+    var i = 2;
+    while (i<=rem) {
+        while (isDivisible(rem,i)) {
+            factors.push(i);
+            rem /= i;
         }
+        i++;
     }
-    return divisors;
+    return factors;
 }
 
 export function getCommonDivisors(num1:number, num2:number) : number[] {
-    var divisors1 = getDivisors(num1);
-    var divisors2 = getDivisors(num2);
+    var divisors1 = factorize(num1);
+    var divisors2 = factorize(num2);
     return divisors1.filter(d => divisors2.includes(d));
 }
 
