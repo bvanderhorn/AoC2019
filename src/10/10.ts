@@ -11,7 +11,10 @@ var getDirection = (location1:[number,number], location2:[number,number]) : [num
     var [x1,y1] = location1;
     var [x2,y2] = location2;
     var [dx,dy] = [x2-x1, y2-y1];
-    var divisor = h.getCommonFactors(Math.abs(dx), Math.abs(dy)).prod();
+    if (dx == 0) return dy == 0 ? [0,0] : [0, dy/Math.abs(dy)];
+    if (dy == 0) return [dx/Math.abs(dx), 0];
+    var commonFactors = h.getCommonFactors(Math.abs(dx), Math.abs(dy));
+    var divisor = commonFactors.length == 0 ? 1 : commonFactors.prod();
     return [dx/divisor, dy/divisor];
 }
 
@@ -26,9 +29,15 @@ var getIntermediateLocations = (location1:[number,number], location2:[number,num
     return intermediateLocations;
 }
 
-var asteroids = h.read(10, "asteroids.txt", "ex").map(x => x.split(''));
-h.print(asteroids);
-h.print(getLocations(asteroids));
+var isVisible = (l1:[number,number], l2:[number,number], locations: [number,number][]) : boolean => {
+    var il = getIntermediateLocations(l1, l2);
+    return il.length == 0 
+        ? true
+        : il.filter(l => locations.some(l2 => h.equals2(l, l2))).length == 0;
+}
 
-var factors = h.factorize(25);
-h.print(factors);
+var asteroids = h.read(10, "asteroids.txt").map(x => x.split(''));
+var locations = getLocations(asteroids);
+h.print(locations);
+var visible = locations.map(l => locations.filter(l2 => isVisible(l, l2, locations)).length ).plus(-1);
+h.print("part 1:", visible.max());

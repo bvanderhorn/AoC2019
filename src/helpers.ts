@@ -204,6 +204,7 @@ export function hex2bin(hex:string) : string {
 }
 
 export function factorize(num:number) : number[] {
+    num = Math.abs(num);
     if (num == 1) return [1];
     var factors:number[] = [];
     var rem = num;
