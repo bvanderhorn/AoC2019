@@ -31,9 +31,7 @@ var getIntermediateLocations = (location1:[number,number], location2:[number,num
 
 var isVisible = (l1:[number,number], l2:[number,number], locations: [number,number][]) : boolean => {
     var il = getIntermediateLocations(l1, l2);
-    return il.length == 0 
-        ? true
-        : il.filter(l => locations.some(l2 => h.equals2(l, l2))).length == 0;
+    return il.filter(l => locations.some(l2 => h.equals2(l, l2))).length == 0;
 }
 
 var asteroids = h.read(10, "asteroids.txt").map(x => x.split(''));
