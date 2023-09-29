@@ -38,6 +38,6 @@ var isVisible = (l1:[number,number], l2:[number,number], locations: [number,numb
 
 var asteroids = h.read(10, "asteroids.txt").map(x => x.split(''));
 var locations = getLocations(asteroids);
-h.print(locations);
 var visible = locations.map(l => locations.filter(l2 => isVisible(l, l2, locations)).length ).plus(-1);
-h.print("part 1:", visible.max());
+var maxIndex = visible.indexOf(visible.max());
+h.print("part 1:", visible[maxIndex], "asteroids visible from location", locations[maxIndex]);
