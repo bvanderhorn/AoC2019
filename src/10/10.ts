@@ -33,9 +33,42 @@ var isVisible = (l1:[number,number], l2:[number,number], locations: [number,numb
     var il = getIntermediateLocations(l1, l2);
     return il.filter(l => locations.some(l2 => h.equals2(l, l2))).length == 0;
 }
+var getVisibles = (location:[number,number], locations: [number,number][]) : [number,number][] => 
+    locations.filter(l => isVisible(location, l, locations)).filter(l => !h.equals2(l, location));
+
+var getAngle = (location:[number,number]) : number => {
+    var [x,y] = location;
+    var angle = Math.atan2(x, -y) * 180 / Math.PI;
+    return angle < 0 ? angle + 360 : angle;
+}
+var sortOnAngle = (location: [number, number], locations: [number,number][]) : [number,number][] => {
+    return locations.sort((a,b) => getAngle(diff(location, a)) - getAngle(diff(location, b)));
+}
+var diff = (location1:[number,number], location2:[number,number]) : [number,number] => [location2[0] - location1[0], location2[1] - location1[1]];
+var getLaseredOnIndex = (location:[number,number], locations: [number,number][], index:number) : [number,number] => {
+    var curIndex = 0;
+    while (true){
+        var visibles = sortOnAngle(location, getVisibles(location, locations));
+        if (visibles.length + curIndex < index) {
+            locations = locations.filter(x => !visibles.some(y => h.equals2(x,y)));
+            curIndex += visibles.length;
+            continue;
+        }
+        return visibles[index - 1 - curIndex];
+    }
+}
 
 var asteroids = h.read(10, "asteroids.txt").map(x => x.split(''));
+
+// part 1
 var locations = getLocations(asteroids);
-var visible = locations.map(l => locations.filter(l2 => isVisible(l, l2, locations)).length ).plus(-1);
+var visible = locations.map(l => getVisibles(l, locations).length);
 var maxIndex = visible.indexOf(visible.max());
-h.print("part 1:", visible[maxIndex], "asteroids visible from location", locations[maxIndex]);
+var station = locations[maxIndex];
+h.print("part 1:", visible[maxIndex], "asteroids visible from location", station);
+
+// part 2
+var v = sortOnAngle(station, getVisibles(station, locations));
+h.print(v.slice(0,5));
+var laseredOnIndex = getLaseredOnIndex(station, locations.copy(), 200);
+h.print("part 2:", laseredOnIndex, "=>", laseredOnIndex[0]*100 + laseredOnIndex[1]);
