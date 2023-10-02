@@ -129,10 +129,22 @@ export class State {
 
     public run = (verbose:boolean = false): number[] => {
         var output:number[] = [];
-        while(true) {
+        while(!this.halt) {
             var curOutput = this.execute(verbose);
             if (curOutput != undefined) output.push(curOutput);
-            if (this.halt) break;
+        }
+        return output;
+    }
+
+    public runTillInputNeededOrHalt = (verbose:boolean = false): number[] => {
+        var output:number[] = [];
+        while(!this.awaitingInput && !this.halt) {
+            var curOutput = this.execute(verbose);
+            if (curOutput != undefined) output.push(curOutput);
+        }
+        if (verbose) {
+            h.print("halted because: ", this.halt ? "halt" : "awaiting input");
+            h.print(" output: ", output);
         }
         return output;
     }

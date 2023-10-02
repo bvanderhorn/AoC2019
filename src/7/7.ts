@@ -12,19 +12,7 @@ var initStates = (program: number[], phases:number[]) : ic.State[] => {
     states[0].input.push(0);
     return states;
 }
-var runStateTillInputNeededOrHalt = (state: ic.State) : number[] => {
-    var output:number[] = [];
-    while (!state.halt) {
-        if (state.awaitingInput) {
-            return output;
-        }
-        var curOutput = state.execute();
-        if (curOutput != undefined) output.push(curOutput);
-    }
-    return output;
-}
 var nextAmpIndex = (ampIndex: number) : number => ampIndex == 4 ? 0 : ampIndex + 1;
-
 var runFeedback = (states: ic.State[]) : number => {
     var ampIndex = 0;
     while (states.some(s => !s.halt)) {
@@ -32,7 +20,7 @@ var runFeedback = (states: ic.State[]) : number => {
             ampIndex = nextAmpIndex(ampIndex);
             continue;
         }
-        var output = runStateTillInputNeededOrHalt(states[ampIndex]);
+        var output = states[ampIndex].runTillInputNeededOrHalt();
         var nextState = states[nextAmpIndex(ampIndex)];
         nextState.input.push(...output);
         // h.print(stringifyStates(states));
