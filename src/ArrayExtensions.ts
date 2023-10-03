@@ -49,8 +49,8 @@ declare global {
         max(): number;
         split(str:(string|RegExp)): any[][];
         replace(str:(string|RegExp), replacement:string): any[];
-        match(regex: RegExp) : any[];
-        match(regex: RegExp, onlySubs:boolean) : any[];
+        match(regex: RegExp|string) : any[];
+        match(regex: RegExp|string, onlySubs:boolean) : any[];
         trim() : any[];
         copy() : any[];
         unique(): any[];
@@ -220,8 +220,9 @@ if(!Array.prototype.match) {
         enumerable: false,
         writable:false,
         configurable: false,
-        value: function match(this: any[][], regex:RegExp, onlySubs:boolean = false) : any[] {
-            return this.mape(e => onlySubs ? e.match(regex).slice(1) : e.match(regex).slice(0));
+        value: function match(this: any[][], regex:RegExp|string, onlySubs:boolean = false) : any[] {
+            var r = typeof(regex) == 'string' ? new RegExp(regex) : regex;
+            return this.mape(e => onlySubs ? e.match(r).slice(1) : e.match(r).slice(0));
         }
     });
 }
