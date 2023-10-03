@@ -44,19 +44,32 @@ var printRunState = (rs: RunState) : void => {
     }
     str.split('\n').split('').printc(x => "^>v<".includes(x), 'c');
 }
+var initRunState = (): RunState => { 
+    return {
+        panels : new Map<string, boolean>(),
+        curPanel: [0,0],
+        direction: "^",
+        state: new ic.State(program.copy(), [0])
+    }
+}
+
+var runRobot = (rs: RunState) : void => {
+    while(!rs.state.halt) {
+        move(rs);
+    }
+}
 
 var program = h.read(11, "program.txt")[0].split(',').tonum();
 var dirs = "^>v<";
 
-var runState: RunState = {
-    panels : new Map<string, boolean>(),
-    curPanel: [0,0],
-    direction: "^",
-    state: new ic.State(program.copy(), [0])
-}
+// part 1
+var rs = initRunState();
+runRobot(rs);
+h.print("part 1:", rs.panels.size);
 
-while(!runState.state.halt) {
-    move(runState);
-    // printRunState(runState);
-}
-h.print("part 1:", runState.panels.size);
+// part 2
+rs = initRunState();
+rs.panels.set(rs.curPanel.toString(), true);
+runRobot(rs);
+h.print("part 2:");
+printRunState(rs);
