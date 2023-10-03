@@ -220,7 +220,7 @@ if(!Array.prototype.match) {
         enumerable: false,
         writable:false,
         configurable: false,
-        value: function match(this: any[][], regex:RegExp|string, onlySubs:boolean = false) : any[] {
+        value: function match(this: any[][], regex:RegExp|string, onlySubs:boolean = true) : any[] {
             var r = typeof(regex) == 'string' ? new RegExp(regex) : regex;
             return this.mape(e => onlySubs ? e.match(r).slice(1) : e.match(r).slice(0));
         }
