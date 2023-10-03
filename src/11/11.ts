@@ -11,16 +11,18 @@ class RunState {
     constructor(program: number[], startPanel: [number, number], startDirection: string) {
         this.curPanel = startPanel;
         this.direction = startDirection;
-        this.state = new ic.State(program.copy(), [0])
+        this.state = new ic.State(program.copy(), [])
     }
 
-    public move = () : void => {
-        var output = this.state.runTillInputNeededOrHalt();
+    public move = (verbose:boolean = false) : void => {
+        this.state.input.push(this.panels.get(this.curPanel.toString()) ? 1 : 0);
+        if (verbose) h.print("curPanel:", this.curPanel, "direction:", this.direction, "input:", this.state.input);
+        var output = this.state.runTillInputNeededOrHalt(verbose);
         if (output.length > 0) this.panels.set(this.curPanel.toString(), output[0] == 1);
         var turn = output[1] == 0 ? -1 : 1;
         this.direction = this._dirs.get((this._dirs.indexOf(this.direction) + turn));
         this.curPanel = this.curPanel.plusEach(this._getMove(this.direction)) as [number, number];
-        this.state.input.push(this.panels.get(this.curPanel.toString()) ? 1 : 0);
+        if (verbose) this.print();
     }
 
     public print = () : void => {
@@ -41,9 +43,9 @@ class RunState {
         str.split('\n').split('').printc(x => this._dirs.includes(x), 'c');
     }
 
-    public run = () : void => {
+    public run = (verbose: boolean = false) : void => {
         while(!this.state.halt) {
-            this.move();
+            this.move(verbose);
         }
     }
 
