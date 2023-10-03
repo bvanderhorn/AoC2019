@@ -8,12 +8,12 @@ type RunState = {
     state: ic.State
 }
 
-var getPanel = (panel: [number, number], direction: string) : [number, number] => {
+var getMove = (direction:string) : [number, number] => {
     switch (direction) {
-        case "U": return [panel[0], panel[1] + 1];
-        case "D": return [panel[0], panel[1] - 1];
-        case "L": return [panel[0] - 1, panel[1]];
-        case "R": return [panel[0] + 1, panel[1]];
+        case "U": return [0, 1];
+        case "D": return [0, -1];
+        case "L": return [-1, 0];
+        case "R": return [1, 0];
         default: throw new Error("invalid direction");
     }
 }
@@ -23,7 +23,7 @@ var move = (rs: RunState) : void => {
     if (output.length > 0) rs.panels.set(rs.curPanel, output[0] == 1);
     var turn = output[1] == 0 ? -1 : 1;
     rs.direction = dirs.get((dirs.indexOf(rs.direction) + turn));
-    rs.curPanel = getPanel(rs.curPanel, rs.direction);
+    rs.curPanel = rs.curPanel.plusEach(getMove(rs.direction)) as [number, number];
     rs.state.input.push(rs.panels.get(rs.curPanel) ? 1 : 0);
 }
 
@@ -38,5 +38,6 @@ var runState: RunState = {
 }
 
 while(!runState.state.halt) {
-    
+    move(runState);
 }
+h.print("part 1:", runState.panels.size);
