@@ -19,7 +19,7 @@ var getMove = (direction:string) : [number, number] => {
 }
 
 var move = (rs: RunState) : void => {
-    var output = rs.state.runTillInputNeededOrHalt(true);
+    var output = rs.state.runTillInputNeededOrHalt();
     if (output.length > 0) rs.panels.set(rs.curPanel.toString(), output[0] == 1);
     var turn = output[1] == 0 ? -1 : 1;
     rs.direction = dirs.get((dirs.indexOf(rs.direction) + turn));
@@ -28,11 +28,11 @@ var move = (rs: RunState) : void => {
 }
 
 var printRunState = (rs: RunState) : void => {
-    var keys = Array.from(rs.panels.keys());
-    var minX = keys.map(x => x[0]).min() - 2;
-    var maxX = keys.map(x => x[0]).max() + 2;
-    var minY = keys.map(x => x[1]).min() - 2;
-    var maxY = keys.map(x => x[1]).max() + 2;
+    var keys = Array.from(rs.panels.keys()).map(x => x.split(',').map(y => +y));
+    var minX = keys.map(x => x[0]).min() - 1;
+    var maxX = keys.map(x => x[0]).max() + 1;
+    var minY = keys.map(x => x[1]).min() - 1;
+    var maxY = keys.map(x => x[1]).max() + 1;
     var str = "";
     for (var y = maxY; y >= minY; y--) {
         for (var x = minX; x <= maxX; x++) {
@@ -57,6 +57,6 @@ var runState: RunState = {
 
 while(!runState.state.halt) {
     move(runState);
-    printRunState(runState);
+    // printRunState(runState);
 }
 h.print("part 1:", runState.panels.size);
