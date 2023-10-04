@@ -31,6 +31,7 @@ declare global {
         plusEach(p:any[]) : any[];
         mod(m:number) : any[];
         abs() : any[];
+        sign() : any[];
         manhattan() : any[];
         manhattan(other:any[]) : any[];
         cartesianProduct() : any[][];
@@ -464,6 +465,19 @@ if (!Array.prototype.abs) {
         }
     });
 }
+
+if (!Array.prototype.sign) {
+    // divide each element by its absolute value, keeping only 1's and -1's (recursively)
+    Object.defineProperty(Array.prototype, 'sign', {
+        enumerable: false, 
+        writable: false, 
+        configurable: false, 
+        value: function sign(this: any[]): any[] {
+            return this.map(el => Array.isArray(el) ? el.sign() : el == 0 ? el : el > 0 ? 1 : -1);
+        }
+    });
+}
+
 
 if (!Array.prototype.manhattan) {
     // calculate the manhattan distance between two arrays (recursively)

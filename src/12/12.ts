@@ -9,10 +9,7 @@ class Moon {
     }
 
     public getGravity = (others: Moon[]) : Vector => 
-        this.position.map( (x,i) => {
-            var ipos = others.map(y => y.position[i]);
-            return ipos.filter(y => y > x).length - ipos.filter(y => y < x).length;
-        }) as Vector;
+        this.position.map( (x,i) => others.map(y => y.position[i] -x).sign().sum()) as Vector;
 
     public applyGravity = (others: Moon[]) : void => {
         this.velocity = this.velocity.plusEach(this.getGravity(others)) as Vector;
@@ -45,7 +42,7 @@ var move = (moons: Moon[], steps: number = 1, verbose:boolean = false) : void =>
     }
     
 }
-var moons = h.read(12, "moons.txt").match("<x=(.*), y=(.*), z=(.*)>").tonum().map(x => new Moon(x, [0,0,0]));
+var moons = h.read(12, "moons.txt", "ex").match("<x=(.*), y=(.*), z=(.*)>").tonum().map(x => new Moon(x, [0,0,0]));
 
 var moons1 = moons.slice(0);
 move(moons1, 100);
