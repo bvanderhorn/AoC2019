@@ -32,7 +32,7 @@ var move = (moons: Moon[], steps: number = 1, verbose:boolean = false) : void =>
         if (i%stepsize == 0) h.print("step", i/stepsize, "*1E6"); 
         moons.forEach(m => m.applyGravity(moons));
         moons.forEach(m => m.applyVelocity());
-        // if (verbose) h.print("step",i, ":\n",moons.map(m => m.summary()))
+        if (verbose) h.print("step",i, ":\n",moons.map(m => m.summary()))
         // var state = getState(moons);
         if (h.equals2(getState(moons), state0)) {
             h.print("found a state that has already been seen after", i, "steps");
@@ -52,7 +52,9 @@ h.print("factors of ", 4686774924, ":", h.factorize(4686774924));
 
 // part 2
 var moons2 = moons.slice(0);
-console.time("move");
-move(moons2, 1000000);
-console.timeEnd("move");
+h.printu("henk");
+h.printu("piet");
+// console.time("move");
+// // move(moons2, 1000000);
+// console.timeEnd("move");
 

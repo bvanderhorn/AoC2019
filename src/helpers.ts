@@ -40,6 +40,20 @@ export function printVerbose(doPrint:boolean, ...input:any[]) {
 }
 
 export function print(...input:any[]) {
+    updateColors(input);
+    console.log(...input);
+}
+
+export function printu(...input:any[]) {
+    updateColors(input);
+    var str = input.join(' ');
+    var lines = str.split(/\r\n|\r|\n/).length;
+    for (var i=0;i<lines;i++) process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
+    process.stdout.write(str);
+}
+
+function updateColors(...input:any[]) : void {
     // replace special color indicators
     for (var i= 0; i < input.length; i++) {
         if (typeof input[i] === 'string') {
@@ -50,8 +64,11 @@ export function print(...input:any[]) {
             input[i] = input[i].replace(/\/\@/g, cOff);
         }
     }
-    console.log(...input);
 }
+
+export function sleep(ms:number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
 export function equals(first: any[], second: any[]) : boolean {
     return JSON.stringify(first) === JSON.stringify(second);
