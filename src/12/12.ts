@@ -35,7 +35,7 @@ var plotXY = (moons: Moon[]) : string => {
     return str.stringc(x => x == "o", 'c');
 }
 var getState = (moons: Moon[]) : number[] => moons.map(m => [m.position, m.velocity]).flat(2);
-var move = (moons: Moon[], steps: number = 1, verbose:boolean = false) : void => {
+var move = async (moons: Moon[], steps: number = 1, verbose:boolean = false) : Promise<void> => {
     console.clear();
     // var states = new Set<string>();
     // states.add(getState(moons));
@@ -46,7 +46,8 @@ var move = (moons: Moon[], steps: number = 1, verbose:boolean = false) : void =>
         moons.forEach(m => m.applyGravity(moons));
         moons.forEach(m => m.applyVelocity());
         if (verbose) h.print("step",i, ":\n",moons.map(m => m.summary()))
-        h.printu(plotXY(moons));
+        await h.sleep(20);
+        h.printu("step ", i, '\n',plotXY(moons));
         // var state = getState(moons);
         if (h.equals2(getState(moons), state0)) {
             h.print("found a state that has already been seen after", i, "steps");
