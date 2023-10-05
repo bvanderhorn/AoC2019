@@ -39,18 +39,26 @@ export function printVerbose(doPrint:boolean, ...input:any[]) {
     if (doPrint) print(...input);
 }
 
-export function print(...input:any[]) {
+export function print(...input:any[]): void {
     updateColors(input);
     console.log(...input);
 }
 
-export function printu(...input:any[]) {
+export function printu(...input:any[]): void {
     updateColors(input);
     var str = input.join(' ');
     var lines = str.split(/\r\n|\r|\n/).length;
-    for (var i=0;i<lines;i++) process.stdout.clearLine(0);
-    process.stdout.cursorTo(0);
+    clearLines(lines);
     process.stdout.write(str);
+}
+
+function clearLines(n:number): void {
+    for (let i = 0; i < n; i++) {
+      //first clear the current line, then clear the previous line
+      if (i>0) process.stdout.moveCursor(0, -1);      
+      process.stdout.clearLine(1);
+    }
+    process.stdout.cursorTo(0);
 }
 
 function updateColors(...input:any[]) : void {
