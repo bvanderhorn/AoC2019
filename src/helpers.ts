@@ -228,7 +228,7 @@ export function hex2bin(hex:string) : string {
     return parseInt(hex,16).toString(2);
 }
 
-export function factorize(num:number) : number[] {
+export function factorize(num:number, verbose:boolean = false) : number[] {
     num = Math.abs(num);
     if (num == 1) return [1];
     var factors:number[] = [];
@@ -241,10 +241,11 @@ export function factorize(num:number) : number[] {
         }
         i++;
     }
+    if (verbose) print('factors of', num, ':', JSON.stringify(factors));
     return factors;
 }
 
-export function getCommonFactors(num1:number, num2:number) : number[] {
+export function getCommonFactors(num1:number, num2:number, verbose: boolean = false) : number[] {
     var divisors1 = factorize(num1);
     var divisors2 = factorize(num2);
     var commonFactors:number[] = [];
@@ -254,6 +255,17 @@ export function getCommonFactors(num1:number, num2:number) : number[] {
             divisors2.splice(divisors2.indexOf(d),1);
         };
     }
+    if (verbose) print('common factors of', num1, 'and', num2, ':', JSON.stringify(commonFactors));
+    return commonFactors;
+}
+
+export function getCommonFactors2(nums:number[], verbose: boolean = false) : number[] {
+    if (verbose) for (const num of nums) factorize(num, true);
+    var commonFactors = getCommonFactors(nums[0], nums[1]);
+    for (let i=2;i<nums.length;i++) {
+        commonFactors = getCommonFactors(commonFactors.prod(), nums[i]);
+    }
+    if (verbose) print('common factors of', nums, ':', commonFactors);
     return commonFactors;
 }
 

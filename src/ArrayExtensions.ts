@@ -48,6 +48,7 @@ declare global {
         last(): any;
         min(): number;
         max(): number;
+        minmax(): number[];
         split(str:(string|RegExp)): any[][];
         replace(str:(string|RegExp), replacement:string): any[];
         match(regex: RegExp|string) : any[];
@@ -390,6 +391,18 @@ if (!Array.prototype.max) {
         configurable: false, 
         value: function max(this: number[]): number {
             return Math.max(...this);
+        }
+    });
+}
+
+if (!Array.prototype.minmax) {
+    // return min and max of all array elements as [min,max]
+    Object.defineProperty(Array.prototype, 'minmax', {
+        enumerable: false, 
+        writable: false, 
+        configurable: false, 
+        value: function minmax(this: number[]): number[] {
+            return [Math.min(...this), Math.max(...this)];
         }
     });
 }
