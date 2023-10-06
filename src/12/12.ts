@@ -88,5 +88,4 @@ h.print("part 1:", moons1.map(m => m.getEnergy()).sum());
 // part 2
 var moonDims = [0,1,2].map(d => keepDimension(moons, d));
 var repeatances = moonDims.map(m => run(m));
-h.print(repeatances);
 h.print("part 2:", h.smallestCommonMultiple(repeatances, true));
