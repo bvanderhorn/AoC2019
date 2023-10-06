@@ -269,6 +269,28 @@ export function getCommonFactors2(nums:number[], verbose: boolean = false) : num
     return commonFactors;
 }
 
+export function combineFactors(num1: number, num2:number) : number[] {
+    var factors1 = factorize(num1);
+    var factors2 = factorize(num2);
+    for (var f of factors1) {
+        if (factors2.includes(f)) {
+            factors2.splice(factors2.indexOf(f), 1);
+        }
+    }
+    return factors1.concat(factors2);
+}
+export function combineFactors2(nums:number[], verbose = false): number[] {
+    if (nums.length == 1) return factorize(nums[0]);
+    var factors = combineFactors(nums[0], nums[1]);
+    factors = combineFactors2([factors.prod(), ...nums.slice(2)]);
+    if (verbose) print("combined factors of",nums,":", JSON.stringify(factors));
+    return factors;
+}
+
+export function smallestCommonMultiple(nums:number[], verbose = false) : number {
+    return combineFactors2(nums, verbose).prod();
+}
+
 export class MultiMap<K,V> {
     private readonly _maps : Map<K,V>[] = [];
     private readonly _maxMapSize = Math.pow(2, 24) -1;
