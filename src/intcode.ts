@@ -150,10 +150,16 @@ export class State {
     }
 
     public simplify = () : any => {
-        return {program: JSON.stringify(this.program), index: this.index, input: JSON.stringify(this.input), halt: this.halt, awaitingInput: this.awaitingInput};
+        return {program: JSON.stringify(this.programArray()), index: this.index, input: JSON.stringify(this.input), halt: this.halt, awaitingInput: this.awaitingInput};
     }
 
     public print = () : void => {
         h.print(h.stringify(this.simplify()));
+    }
+
+    private programArray() : number[] {
+        var arr: number[] = [];
+        this.program.forEach((v,k) => arr[k] = v);
+        return arr;
     }
 }

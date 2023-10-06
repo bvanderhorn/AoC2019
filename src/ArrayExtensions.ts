@@ -45,6 +45,7 @@ declare global {
         get(index: number) : any;
         slice2(start:number, end:number) : any[];
         slice2(start:number) : any[];
+        chunks(size:number) : any[][];
         last(): any;
         min(): number;
         max(): number;
@@ -661,6 +662,19 @@ if (!Array.prototype.slice2) {
         }
     });
 }
+
+if (!Array.prototype.chunks) {
+    // split array into chunks of given size
+    Object.defineProperty(Array.prototype, 'chunks', {
+        enumerable: false,
+        writable: false,
+        configurable: false,
+        value: function chunks(this: any[], size:number): any[][] {
+            return Array.from({length: Math.ceil(this.length / size)}, (v, i) => this.slice(i * size, i * size + size));
+        }
+    });
+}
+
 
 if (!String.prototype.slice2) {
     // slice string at any given position,
