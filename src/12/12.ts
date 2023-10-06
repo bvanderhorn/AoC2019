@@ -24,16 +24,16 @@ class Moon {
     public stringify = () : string => JSON.stringify(this.summary());
 }
 var plotXY = (moons: Moon[], fit:boolean = false) : string => {
-    var range = [-10, 10];
+    var xrange = [-10, 10];
+    var yrange = [-10, 10];
     if (fit) {
-        var xRange = moons.map(m => m.position[0]).minmax();
-        var yRange = moons.map(m => m.position[1]).minmax();
-        range = [Math.min(xRange[0], yRange[0]), Math.max(xRange[1], yRange[1])];
+        xrange = moons.map(m => m.position[0]).minmax();
+        yrange = moons.map(m => m.position[1]).minmax();
     }
     var str: string[][] = [];
-    for (var y = range[1]; y >= range[0]; y--) {
+    for (var y = yrange[1]; y >= yrange[0]; y--) {
         var curStr : string[] = [];
-        for (var x = range[0]; x <= range[1]; x++) {
+        for (var x = xrange[0]; x <= xrange[1]; x++) {
             var mIndex = moons.findIndex(m => h.equals2(m.position.slice(0,2), [x,y]));
             curStr.push(mIndex>-1 ? mIndex.toString() : ".");
         }
@@ -100,7 +100,7 @@ h.print(plotXY(moons, true));
 
 // part 1
 var moons1 = copyMoons(moons);
-run(moons1, 100);
+run(moons1, 1000);
 h.print("part 1:", moons1.map(m => m.getEnergy()).sum());
 
 // part 2
