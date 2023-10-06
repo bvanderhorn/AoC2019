@@ -149,12 +149,17 @@ export class State {
         return output;
     }
 
-    public simplify = () : any => {
-        return {program: JSON.stringify(this.programArray()), index: this.index, input: JSON.stringify(this.input), halt: this.halt, awaitingInput: this.awaitingInput};
+    public simplify = (withProgram:boolean = true) : any => {
+        var program = JSON.stringify(this.programArray());
+        var index = this.index;
+        var input = JSON.stringify(this.input);
+        var halt = this.halt;
+        var awaitingInput = this.awaitingInput;
+        return withProgram ? {program, index, input, halt, awaitingInput} : {index, input, halt, awaitingInput};
     }
 
-    public print = () : void => {
-        h.print(h.stringify(this.simplify()));
+    public print = (withProgram:boolean = true) : void => {
+        h.print(h.stringify(this.simplify(withProgram)));
     }
 
     private programArray() : number[] {

@@ -13,6 +13,11 @@ var getTile = (type:number) : string => {
 }
 
 var draw = (tiles: number[][]) : void => {
+    var scoreIndex = tiles.findIndex(x => x[0] == -1 && x[1] == 0);
+    if (scoreIndex > -1) {
+        h.print("score:", tiles[scoreIndex][2]);
+        tiles.splice(scoreIndex, 1);
+    }
     var xRange = tiles.map(x => x[0]).minmax();
     var yRange = tiles.map(x => x[1]).minmax();
     var str: string[][] = [];
@@ -24,14 +29,43 @@ var draw = (tiles: number[][]) : void => {
         }
         str.push(curStr);
     }
-    str.printc(x => x != ".", 'c');
+    
+    str.printc(x => x == "o", 'c');
+}
+
+var updateBall = (tiles: number[][], ballPosition:number[]) : void => {
+    var ballIndex = tiles.findIndex(x => h.equals2(x.slice(0,2), ballPosition));
+    if (ballIndex > -1) {
+        var paddleIndex = tiles.findIndex(x => x[2] == 3);
+        if (paddleIndex > -1) {
+            var paddlePosition = tiles[paddleIndex].slice(0,2);
+            if (ballPosition[0] > paddlePosition[0]) {
+                tiles[ballIndex][2] = 1;
+            } else if (ballPosition[0] < paddlePosition[0]) {
+                tiles[ballIndex][2] = -1;
+            }
+        }
+    }
 }
 
 var program = h.read(13, "program.txt")[0].split(',').tonum();
-h.print(program.slice(0,5));
 var state = new ic.State(program.copy(), []);
 var tiles = state.runTillInputNeededOrHalt().chunks(3);
 h.print("part 1:",tiles.map(x => x.last()).count(2));
 
 // part 2
-draw(tiles);
+var program2 = program.copy();
+program2[0] = 2;
+var state2 = new ic.State(program2, []);
+
+var tiles2 = state2.runTillInputNeededOrHalt().chunks(3);
+draw(tiles2);
+state2.print(false);
+
+state2.input.push(0);
+tiles2 = state2.runTillInputNeededOrHalt().chunks(3);
+draw(tiles2);
+
+state2.input.push(1);
+tiles2 = state2.runTillInputNeededOrHalt().chunks(3);
+draw(tiles2);
