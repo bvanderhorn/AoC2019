@@ -42,6 +42,24 @@ var plotXY = (moons: Moon[], fit:boolean = false) : string => {
     return str.stringc(x => x != ".", 'c');
 }
 
+var combineFactors = (num1: number, num2:number) : number[] => {
+    var factors1 = h.factorize(num1);
+    var factors2 = h.factorize(num2);
+    for (var f of factors1) {
+        if (factors2.includes(f)) {
+            factors2.splice(factors2.indexOf(f), 1);
+        }
+    }
+    return factors1.concat(factors2);
+}
+var combineFactors2 = (nums:number[], verbose = false): number[] => {
+    if (nums.length == 1) return h.factorize(nums[0]);
+    var factors = combineFactors(nums[0], nums[1]);
+    factors = combineFactors2([factors.prod(), ...nums.slice(2)]);
+    if (verbose) h.print("combined factors of",nums,":", JSON.stringify(factors));
+    return factors;
+}
+
 var copyMoons = (moons: Moon[]) : Moon[] => moons.map(m => new Moon(m.position, m.velocity));
 
 var areEquivalent = (moons1: Moon[], moons2: Moon[]) : boolean =>
@@ -75,26 +93,18 @@ var run = (moons: Moon[], steps: number = 1E6, verbose:boolean = false) : number
     // h.print("\n");
     return -1;
 }
-var moons = h.read(12, "moons.txt", "ex").match("<x=(.*), y=(.*), z=(.*)>").tonum().map(x => new Moon(x, [0,0,0]));
+
+// init
+var moons = h.read(12, "moons.txt").match("<x=(.*), y=(.*), z=(.*)>").tonum().map(x => new Moon(x, [0,0,0]));
 h.print(plotXY(moons, true));
+
+// part 1
 var moons1 = copyMoons(moons);
 run(moons1, 100);
 h.print("part 1:", moons1.map(m => m.getEnergy()).sum());
 
-h.factorize(4686774924, true);
-h.factorize(7030162386, true);
-
 // part 2
 var moonDims = [0,1,2].map(d => keepDimension(moons, d));
-// console.time("run");
-var testMoons = [new Moon([0, 0]), new Moon([0,0]), new Moon([-5,0])];
-// h.factorize(18,true);
-// h.factorize(8,true);
-// h.getCommonFactors(8,18,true);
 var repeatances = moonDims.map(m => run(m));
 h.print(repeatances);
-var cf = h.getCommonFactors2(repeatances, true);
-h.print("part 2:", repeatances.times(1/cf.prod()).prod());
-
-// console.timeEnd("run");
-
+h.print("part 2:", combineFactors2(repeatances, true).prod());
