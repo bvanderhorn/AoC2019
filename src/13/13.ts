@@ -77,14 +77,13 @@ h.print("part 1:",state1.tiles.map(x => x.last()).count(2));
 // part 2
 var program2 = program.copy();
 program2[0] = 2;
-var tState = new TileState(program2);
-tState.draw();
-tState.state.print(false);
+var state2 = new TileState(program2);
+state2.draw();
+state2.state.print(false);
 
-//state2.input.push(0);
-//tiles2 = state2.runTillInputNeededOrHalt().chunks(3);
-//draw(tiles2);
-
-//state2.input.push(1);
-//tiles2 = state2.runTillInputNeededOrHalt().chunks(3);
-//draw(tiles2);
+state2.runOnce(0);
+state2.draw();
+state2.runOnce(0);
+state2.draw();
+state2.runOnce(1);
+state2.draw();
