@@ -34,7 +34,7 @@ class TileState {
 
    private getTile = (type:number) : string => {
        switch (type) {
-           case 0: return " ";
+           case 0: return ".";
            case 1: return "#";
            case 2: return "X";
            case 3: return "-";
