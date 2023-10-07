@@ -36,7 +36,7 @@ var draw = (tiles: number[][]) : void => {
 var updateTiles = (tiles: number[][], newTiles: number[][] ) : void => {
     for (const t of newtiles) {
 	var tindex = tiles.findIndex(x => h.equals2(x.slice(0,2), t.slice(0,2)));
-	if (tindex>-1) tiles.splice(tindex, t,1);
+	if (tindex>-1) tiles.splice(tindex, 1,t);
     }
 }
 
