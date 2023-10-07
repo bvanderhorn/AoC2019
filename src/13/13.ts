@@ -12,17 +12,24 @@ class TileState {
 	   this.state = new ic.State(program.copy(), []);
 	   this.runOnce();
    }
-   public nextMove = 
-   
-   public getx = (tiletype:number) : number => {
-	   var bindex = tiles.findIndex(x => x[2] == tiletype);
-	   return tiles[bindex][0];
+   public nextMove = () : number => {
+	   var xball = this.getx(4);
+	   var xpad = this.getx(3);
+	   return xball - xpad >0 ? 1 : xball - xpad <0 ? -1 : 0;
    }
    
-   public run(input: number[], draw: boolean= true) {
-	   for (var i=0;i<input.length;i++) {
-		this.runOnce(input[i]);
-		if (draw) this.draw();
+   public getx = (tiletype:number) : number => {
+	   var bindex = this.tiles.findIndex(x => x[2] == tiletype);
+	   return this.tiles[bindex][0];
+   }
+   
+   public run = async (draw: boolean= true): Promise<void> {
+	   while (!this.state.halt) {
+		this.runOnce(this.nextMove());
+		if (draw) {
+			this.draw();
+			await h.sleep(30);
+		}
 	   }
    }
    
