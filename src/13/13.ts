@@ -13,6 +13,13 @@ class TileState {
 	   this.runOnce();
    }
    
+   public run(input: number[], draw: boolean= true) {
+	   for (var i=0;i<input.length;i++) {
+		this.runOnce(input[i]);
+		if (draw) this.draw();
+	   }
+   }
+   
    public runOnce = (input:number=-2) : void => {
 	   if (input>-2) this.state.input.push(input);
 	   var newTiles = this.state.runTillInputNeededOrHalt().chunks(3);
@@ -81,9 +88,4 @@ var state2 = new TileState(program2);
 state2.draw();
 state2.state.print(false);
 
-state2.runOnce(0);
-state2.draw();
-state2.runOnce(0);
-state2.draw();
-state2.runOnce(1);
-state2.draw();
+state2.run([0,0,0,0,0,0,0,0,0],true);
