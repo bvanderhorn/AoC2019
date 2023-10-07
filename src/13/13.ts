@@ -28,7 +28,7 @@ class TileState {
 	   while (!this.state.halt) {
 		this.runOnce(this.nextMove());
 		if (draw) {
-			h.printu(this.draw());
+			h.printu(this.draw() + "\n");
 			await h.sleep(10);
 		}
 	   }
