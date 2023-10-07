@@ -12,6 +12,12 @@ class TileState {
 	   this.state = new ic.State(program.copy(), []);
 	   this.runOnce();
    }
+   public nextMove = 
+   
+   public getx = (tiletype:number) : number => {
+	   var bindex = tiles.findIndex(x => x[2] == tiletype);
+	   return tiles[bindex][0];
+   }
    
    public run(input: number[], draw: boolean= true) {
 	   for (var i=0;i<input.length;i++) {
@@ -88,4 +94,4 @@ var state2 = new TileState(program2);
 state2.draw();
 state2.state.print(false);
 
-state2.run([0,0,0,0,0,0,0,0,0],true);
+state2.run([-1,0,1,0,0,0,0,0,0],true);
