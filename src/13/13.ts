@@ -3,12 +3,21 @@ import * as ic from '../intcode';
 
 class TileState {
 
-   public tiles: number[][];
+   public tiles: number[][] = [];
+   public state: ic.State;
+   public input: number[] = [];
    private _score: number = 0;
    
-   constructor(tiles:number[][]) {
-	   this.tiles = tiles;
-	   this.setScore();
+   constructor(program: number[]) {
+	   this.state = new ic.State(program.copy(), []);
+	   this.runOnce();
+   }
+   
+   public runOnce = (input:number=-2) : void => {
+	   if (input>-2) this.state.input.push(input);
+	   var newTiles = this.state.runTillInputNeededOrHalt().chunks(3);
+	   this.update(newTiles);
+	   //this.draw();
    }
 
    public get score() : number {
@@ -62,19 +71,15 @@ class TileState {
    }
 }
 var program = h.read(13, "program.txt")[0].split(',').tonum();
-var state = new ic.State(program.copy(), []);
-var tiles = state.runTillInputNeededOrHalt().chunks(3);
-h.print("part 1:",tiles.map(x => x.last()).count(2));
+var state1 = new TileState(program);
+h.print("part 1:",state1.tiles.map(x => x.last()).count(2));
 
 // part 2
 var program2 = program.copy();
 program2[0] = 2;
-var state2 = new ic.State(program2, []);
-
-var tiles2 = state2.runTillInputNeededOrHalt().chunks(3);
-var tState = new TileState(tiles2);
+var tState = new TileState(program2);
 tState.draw();
-state2.print(false);
+tState.state.print(false);
 
 //state2.input.push(0);
 //tiles2 = state2.runTillInputNeededOrHalt().chunks(3);
