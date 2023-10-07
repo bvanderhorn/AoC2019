@@ -74,6 +74,11 @@ function updateColors(...input:any[]) : void {
     }
 }
 
+export function colorStr(input: any, color: string) : string {
+	var c = colorValueArray[colorNameArray.indexOf(color)];
+	return c + input + cOff;
+}
+
 export function sleep(ms:number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }

@@ -23,12 +23,13 @@ class TileState {
 	   return this.tiles[bindex][0];
    }
    
-   public run = async (draw: boolean= true): Promise<void> {
+   public run = async (draw: boolean= true): Promise<void> => {
+	   if (draw) h.print(this.draw());
 	   while (!this.state.halt) {
 		this.runOnce(this.nextMove());
 		if (draw) {
-			this.draw();
-			await h.sleep(30);
+			h.printu(this.draw());
+			await h.sleep(10);
 		}
 	   }
    }
@@ -54,7 +55,7 @@ class TileState {
 
    private getTile = (type:number) : string => {
        switch (type) {
-           case 0: return ".";
+           case 0: return " ";
            case 1: return "#";
            case 2: return "X";
            case 3: return "-";
@@ -63,9 +64,7 @@ class TileState {
        }
    }
 
-   public draw = () : void => {
-	h.print("score:", this._score);
-
+   public draw = () : string => {
        var xRange = this.tiles.map(x => x[0]).minmax();
        var yRange = this.tiles.map(x => x[1]).minmax();
        var str: string[][] = [];
@@ -77,8 +76,8 @@ class TileState {
            }
            str.push(curStr);
        }
-    
-       str.printc(x => x == "o", 'c');
+       var scoreLine = "score: " + h.colorStr(this.score, 'y') + "\n";
+       return scoreLine + str.stringc(x => "o-".includes(x), 'c');
    }
 
    public update = (newTiles: number[][] ) : void => {
@@ -90,6 +89,7 @@ class TileState {
 	this.setScore();
    }
 }
+
 var program = h.read(13, "program.txt")[0].split(',').tonum();
 var state1 = new TileState(program);
 h.print("part 1:",state1.tiles.map(x => x.last()).count(2));
@@ -98,7 +98,5 @@ h.print("part 1:",state1.tiles.map(x => x.last()).count(2));
 var program2 = program.copy();
 program2[0] = 2;
 var state2 = new TileState(program2);
-state2.draw();
-state2.state.print(false);
-
-state2.run([-1,0,1,0,0,0,0,0,0],true);
+// state2.state.print(false);
+state2.run(true);
