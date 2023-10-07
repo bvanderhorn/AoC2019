@@ -33,18 +33,10 @@ var draw = (tiles: number[][]) : void => {
     str.printc(x => x == "o", 'c');
 }
 
-var updateBall = (tiles: number[][], ballPosition:number[]) : void => {
-    var ballIndex = tiles.findIndex(x => h.equals2(x.slice(0,2), ballPosition));
-    if (ballIndex > -1) {
-        var paddleIndex = tiles.findIndex(x => x[2] == 3);
-        if (paddleIndex > -1) {
-            var paddlePosition = tiles[paddleIndex].slice(0,2);
-            if (ballPosition[0] > paddlePosition[0]) {
-                tiles[ballIndex][2] = 1;
-            } else if (ballPosition[0] < paddlePosition[0]) {
-                tiles[ballIndex][2] = -1;
-            }
-        }
+var updateTiles = (tiles: number[][], newTiles: number[][] ) : void => {
+    for (const t of newtiles) {
+	var tindex = tiles.findIndex(x => h.equals2(x.slice(0,2), t.slice(0,2)));
+	if (tindex>-1) tiles.splice(tindex, t,1);
     }
 }
 
