@@ -6,13 +6,8 @@ var getDirCode = (dir: string) : number => "^v<>".indexOf(dir) + 1;
 var getCoor = (curCoor: [number, number], dir: string) : [number, number] => 
     curCoor.plusEach([[0,-1], [0,1], [-1,0], [1,0]][getDirCode(dir) - 1]) as [number, number];
 
-var mapToArray = (map: Map<string, number>) : [number, number, number][] =>
-    Array.from(map, ([k,v]) => [...k.split(',').map(x => +x), v] as [number, number, number]);
-
-var mapToString = (map: Map<string, number>) : string => arrayToString(mapToArray(map));
-
-var arrayToString = (array: [number, number, number][]) : string =>
-    h.coorToMap(array, getTile, " ", [[-22,22], [-22,22]]).stringc(x => "$*D".includes(x), 'c') + "\n";
+var mapToString = (map: Map<string, number>) : string =>
+    h.coorMapToMap(map, getTile, " ", [[-22,22], [-22,22]]).stringc(x => "$*D".includes(x), 'c') + "\n";
 
 var curMap = (map: Map<string, number>, curCoor: [number, number]) : string => {
     var coorCopy = new Map(map);
@@ -20,7 +15,7 @@ var curMap = (map: Map<string, number>, curCoor: [number, number]) : string => {
     return mapToString(coorCopy);
 }
 
-var simpleMap = (program: number[], steps:number = 1E6, verbose = false) : [number, number, number][] => {
+var simpleMap = (program: number[], steps:number, verbose = false) : Map<string, number> => {
     var coor: Map<string, number> = new Map<string, number>();
     var curCoor: [number, number] = [0,0];
     coor.set(curCoor.toString(), 3);
@@ -30,6 +25,7 @@ var simpleMap = (program: number[], steps:number = 1E6, verbose = false) : [numb
 
     // simple strategy: go any direction till first wall, then always keep wall left;
     // repeat for [steps], then return map
+    var dirs = "^>v<";
     var dir = "^";
     for (var i = 0; i < steps; i++) {
         var nextCoor = getCoor(curCoor, dir);
@@ -37,21 +33,17 @@ var simpleMap = (program: number[], steps:number = 1E6, verbose = false) : [numb
         var output = state.runTillInputNeededOrHalt();
         var type = output[0];
         if (!coor.get(nextCoor.toString())) coor.set(nextCoor.toString(), type);
-        if (type == 0) {
-            dir = "^>v<".get("^>v<".indexOf(dir) + 1);
-        } else {
-            dir = "^>v<".get("^>v<".indexOf(dir) - 1);
-            curCoor = nextCoor;
-        }
+        dir = dirs.get(dirs.indexOf(dir) + (type==0 ? 1 : -1));
+        if (type != 0) curCoor = nextCoor;
         
         if (verbose) h.printu(curMap(coor, curCoor));
     }
     
-    return mapToArray(coor);
+    return coor;
 }
 
 var program = h.read(15, "program.txt")[0].split(',').tonum();
 console.time("part 1");
 var map = simpleMap(program, 5E3);
-h.print(arrayToString(map));
+h.print(mapToString(map));
 console.timeEnd("part 1");

@@ -84,6 +84,11 @@ export function colorStr(input: any, color: string) : string {
 	return c + input + cOff;
 }
 
+export function coorMapToMap(coor: Map<string, number>, translate: (x:number) => string, unchartered: string = ".", givenRange: [[number, number], [number, number]] | undefined = undefined) : string[][] {
+    var coorArray = Array.from(coor, ([k,v]) => [...k.split(',').map(x => +x), v] as [number, number, number]);
+    return coorToMap(coorArray, translate, unchartered, givenRange);
+}
+
 export function coorToMap(coor:[number, number, number][], translate: (x:number) => string, unchartered: string = ".", givenRange: [[number, number], [number, number]] | undefined = undefined) : string[][] {
     // draw a 2D map of coordinates
     // coor in format [x, y, value], where x is right and y is down
