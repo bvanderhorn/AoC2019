@@ -28,6 +28,7 @@ var equate = (equation: Map<string, number>, toMineral: string, equations: strin
         var next = equateOrder.length == 0 
             ? getNotInOtherIntermediates(Array.from(totalEquation.keys()).filter(x => x!= toMineral), equations, toMineral)
             : equateOrder;
+
         for (const n of next){
             var eq = getEquation(n, equations);
             var amount = dissect(eq[0]).amount;
@@ -78,15 +79,12 @@ var fromMineral = "FUEL";
 var toMineral = "ORE";
 
 // get main equation
-var fuelEq = getEquation(fromMineral, equations);
+var fromEquation = getEquation(fromMineral, equations);
 var totalEquation = new Map<string, number>();
-fuelEq.slice(1).forEach(x => totalEquation.set(dissect(x).mineral, dissect(x).amount));
+fromEquation.slice(1).forEach(x => totalEquation.set(dissect(x).mineral, dissect(x).amount));
 
-// part 1
+// execute
 var p1 = equate(totalEquation, toMineral, equations);
 h.print("part 1:",p1.needed);
-
-// part 2
 var ore = 1E12;
-var times = newtonSearch(ore, p1.needed, totalEquation, toMineral, equations, p1.equateOrder);
-h.print("part 2:", times);
+h.print("part 2:", newtonSearch(ore, p1.needed, totalEquation, toMineral, equations, p1.equateOrder));

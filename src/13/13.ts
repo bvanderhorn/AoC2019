@@ -54,14 +54,9 @@ class TileState {
    }
 
    private getTile = (type:number) : string => {
-       switch (type) {
-           case 0: return " ";
-           case 1: return "#";
-           case 2: return "X";
-           case 3: return "-";
-           case 4: return "o";
-           default: throw new Error("invalid tile type");
-       }
+       var tiles = " #X-o";
+       if (type<0 || type >= tiles.length) throw new Error("invalid tile type");
+       return tiles[type];
    }
 
    public draw = () : string => {

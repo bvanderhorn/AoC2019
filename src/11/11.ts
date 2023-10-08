@@ -50,13 +50,9 @@ class RunState {
     }
 
     private _getMove = (direction:string) : [number, number] => {
-        switch (direction) {
-            case "^": return [0, 1];
-            case "v": return [0, -1];
-            case "<": return [-1, 0];
-            case ">": return [1, 0];
-            default: throw new Error("invalid direction");
-        }
+        var directions = "^>v<";
+        if (!directions.includes(direction)) throw new Error("invalid direction");
+        return [[0,1], [1,0], [0,-1], [-1,0]][directions.indexOf(direction)] as [number, number];
     }
 }
 
