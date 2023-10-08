@@ -27,6 +27,7 @@ declare global {
         range(): number[];
         col(column:number): any[];
         times(t: number) : any[];
+        timesEach(t: any[]) : any[];
         plus(p:number) : any[];
         plusEach(p:any[]) : any[];
         mod(m:number) : any[];
@@ -452,6 +453,18 @@ if (!Array.prototype.plusEach) {
         configurable: false, 
         value: function plusEach(this: any[], other:any[]): any[] {
             return this.map((el,i) => Array.isArray(el) ? el.plusEach(other[i]) : el + other[i]);
+        }
+    });
+}
+
+if (!Array.prototype.timesEach) {
+    // multiply each element of two arrays with each other (recursively)
+    Object.defineProperty(Array.prototype, 'timesEach', {
+        enumerable: false, 
+        writable: false, 
+        configurable: false, 
+        value: function timesEach(this: any[], other:any[]): any[] {
+            return this.map((el,i) => Array.isArray(el) ? el.timesEach(other[i]) : el * other[i]);
         }
     });
 }
