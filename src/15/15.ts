@@ -42,42 +42,20 @@ var simpleMap = (program: number[], steps:number, verbose = false) : Map<string,
     return coor;
 }
 
-var dijkstra = (map: Map<string, number>, start: [number, number]) : Map<string, number> => {
-    // get all distances on the map from the given start using Dijkstra's algorithm
-    var distances = new Map<string, number>();
-    distances.set(start.toString(), 0);
-    var remaining : [number, number][] = [start];
-    var visited = new Set<string>();
-
-    while (remaining.length > 0) {
-        var cur = remaining.shift()!;
-        var curDist = distances.get(cur.toString())!;
-        var neighbors = [[0,1], [0,-1], [1,0], [-1,0]].map(x => cur.plusEach(x) as [number, number]);
-        for (const n of neighbors) {
-            var notYetVisited = !visited.has(n.toString());
-            var notAWall = map.get(n.toString()) != 0;
-            if (notYetVisited && notAWall) {
-                if (curDist + 1 < (distances.get(n.toString()) ?? 1E10))
-                distances.set(n.toString(), curDist + 1);
-                if (!remaining.includes2(n)) remaining.push(n);
-            }
-        }
-        visited.add(cur.toString());
-    }
-    return distances;
-}
+var cleanMap = (map: Map<string, number>) : [number, number][] => 
+    Array.from(map).filter(x => x[1] != 0).map(x => x[0].split(',').tonum() as [number, number]);
 
 var program = h.read(15, "program.txt")[0].split(',').tonum();
 
 // retrieve the map
 var map = simpleMap(program, 5E3);
 h.print(mapToString(map));
-var oxygen = Array.from(map).find(x => x[1] == 2)![0];
+var oxygen = Array.from(map).find(x => x[1] == 2)![0].split(',').tonum() as [number, number];
 
 // part 1
-var distances = dijkstra(map, [0,0]);
-h.print("part 1:", distances.get(oxygen));
+var distances = h.simpleDijkstra(cleanMap(map), [0,0]);
+h.print("part 1:", distances.get(oxygen.toString()));
 
 // part 2
-var distances2 = dijkstra(map, oxygen.split(',').tonum() as [number, number]);
+var distances2 = h.simpleDijkstra(cleanMap(map), oxygen);
 h.print("part 2:", Array.from(distances2.values()).max());

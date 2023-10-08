@@ -242,6 +242,36 @@ export function simpleSolve(input: any[][]) : any[] {
     return solved;
 }
 
+export function simpleDijkstra (map: [number, number][], start: [number, number]) : Map<string, number> {
+    // get all distances on the map from the given start using Dijkstra's algorithm
+    // this assumes:
+    //   1. the field is a 2D array of coordinates, all of which are present in the map
+    //   2. all connected coordinates have a distance of 1 between them
+    // Output format is a Map with keys [x,y].toString(), values the distance from the start
+    var distances = new Map<string, number>();
+    distances.set(start.toString(), 0);
+    var remaining = [start];
+    var visited = new Set<string>();
+    while (remaining.length > 0) {
+        var cur = remaining.shift()!;
+        var curDist = distances.get(cur.toString())!;
+        var neighbors = [[0,1], [0,-1], [1,0], [-1,0]].map(x => cur.plusEach(x) as [number, number]);
+        for (const n of neighbors) {
+            var notYetVisited = !visited.has(n.toString());
+            var presentOnMap = map.includes2(n);
+
+            if (notYetVisited && presentOnMap) {
+                var newDist = curDist + 1;
+                var existingDist = distances.get(n.toString()) ?? 1E10;
+                if (newDist<existingDist) distances.set(n.toString(), newDist);
+                if (!remaining.includes2(n)) remaining.push(n);
+            }
+        }
+        visited.add(cur.toString());
+    }
+    return distances;
+}
+
 export function ea(len:number|number[],fill:any = undefined) : any[] {
     // create an array with len elements, filled with fill
     // note: create a multi-dimensional array by passing an array as len
