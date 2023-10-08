@@ -57,35 +57,19 @@ var equateTimes = (amount: number, equation: Map<string, number>, toMineral: str
 var newtonSearch = (amount: number, singleNeeded: number, equation: Map<string, number>, toMineral: string, equations: string[][], equateOrder: string[]) : number => {
     var times = Math.floor(amount / singleNeeded);
     var deltaTimes = times;
-    
+
     // initial search
     while(deltaTimes > 1) {
         var needed = equateTimes(times, equation, toMineral, equations, equateOrder);
-        if (needed > amount) {
-            times -= deltaTimes;
-            deltaTimes = Math.ceil(deltaTimes / 2);
-        } else {
-            times += deltaTimes;
-        }
+        deltaTimes = Math.ceil(deltaTimes / 2);
+        times += needed > amount ? -deltaTimes : deltaTimes;
     }
 
     // refined search
     var curNeeded = equateTimes(times, equation, toMineral, equations, equateOrder);
-    if (curNeeded == amount) return times;
-    else if (curNeeded > amount) {
-        while (curNeeded > amount) {
-            times--;
-            curNeeded = equateTimes(times, equation, toMineral, equations, equateOrder);
-        }
-        return times;
-    }
-    else {
-        while (curNeeded < amount) {
-            times++;
-            curNeeded = equateTimes(times, equation, toMineral, equations, equateOrder);
-        }
-        return curNeeded == amount ? times : times - 1;
-    }
+    while (curNeeded <= amount) curNeeded = equateTimes(++times, equation, toMineral, equations, equateOrder);
+    while (curNeeded > amount)  curNeeded = equateTimes(--times, equation, toMineral, equations, equateOrder);
+    return times;
 }
 
 var equations = h.read(14, "equations.txt").split(/=>|,/).trim().map(x => x.reverse());
