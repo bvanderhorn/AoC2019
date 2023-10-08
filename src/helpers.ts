@@ -84,6 +84,25 @@ export function colorStr(input: any, color: string) : string {
 	return c + input + cOff;
 }
 
+export function coorToMap(coor:[number, number, number][], translate: (x:number) => string, unchartered: string = ".") : string[][] {
+    // draw a 2D map of coordinates
+    // coor in format [x, y, value], where x is right and y is down
+    // translate is a function that translates the value to a string
+    // returns a 2D string array that can be printed using x.printc() or x.stringc()
+    var xRange = coor.map(x => x[0]).minmax();
+    var yRange = coor.map(x => x[1]).minmax();
+    var str: string[][] = [];
+    for (var y = yRange[0]; y <= yRange[1]; y++) {
+        var curStr : string[] = [];
+        for (var x = xRange[0]; x <= xRange[1]; x++) {
+            var mIndex = coor.findIndex(m => equals2(m.slice(0,2), [x,y]));
+            curStr.push(mIndex>-1 ? translate(coor[mIndex][2]) : unchartered);
+        }
+        str.push(curStr);
+    }
+    return str;
+}
+
 export async function sleep(ms:number) : Promise<void> {
     // sleep for ms milliseconds (use asynchroneously)
     return new Promise(resolve => setTimeout(resolve, ms));

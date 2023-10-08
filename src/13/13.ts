@@ -38,7 +38,6 @@ class TileState {
 	   if (input>-2) this.state.input.push(input);
 	   var newTiles = this.state.runTillInputNeededOrHalt().chunks(3);
 	   this.update(newTiles);
-	   //this.draw();
    }
 
    public get score() : number {
@@ -60,17 +59,7 @@ class TileState {
    }
 
    public draw = () : string => {
-       var xRange = this.tiles.map(x => x[0]).minmax();
-       var yRange = this.tiles.map(x => x[1]).minmax();
-       var str: string[][] = [];
-       for (var y = yRange[0]; y <= yRange[1]; y++) {
-           var curStr : string[] = [];
-           for (var x = xRange[0]; x <= xRange[1]; x++) {
-               var mIndex = this.tiles.findIndex(m => h.equals2(m.slice(0,2), [x,y]));
-               curStr.push(mIndex>-1 ? this.getTile(this.tiles[mIndex][2]) : ".");
-           }
-           str.push(curStr);
-       }
+       var str = h.coorToMap(this.tiles as [number, number, number][], this.getTile, ".");
        var scoreLine = "score: " + h.colorStr(this.score, 'y') + "\n";
        return scoreLine + str.stringc(x => "o-".includes(x), 'c');
    }
