@@ -245,13 +245,16 @@ export function simpleSolve(input: any[][]) : any[] {
 export function simpleDijkstra (map: [number, number][], start: [number, number]) : Map<string, number> {
     // get all distances on the map from the given start using Dijkstra's algorithm
     // this assumes:
-    //   1. the field is a 2D array of coordinates, all of which are present in the map
+    //   1. the map is a list of 2D [x,y] coordinates, which are all the visitable coordinates
     //   2. all connected coordinates have a distance of 1 between them
+    //   3. coordinates are NOT diagonally connected
     // Output format is a Map with keys [x,y].toString(), values the distance from the start
+
     var distances = new Map<string, number>();
     distances.set(start.toString(), 0);
     var remaining = [start];
     var visited = new Set<string>();
+
     while (remaining.length > 0) {
         var cur = remaining.shift()!;
         var curDist = distances.get(cur.toString())!;
@@ -262,8 +265,8 @@ export function simpleDijkstra (map: [number, number][], start: [number, number]
 
             if (notYetVisited && presentOnMap) {
                 var newDist = curDist + 1;
-                var existingDist = distances.get(n.toString()) ?? 1E10;
-                if (newDist<existingDist) distances.set(n.toString(), newDist);
+                var existingDist = distances.get(n.toString()) ?? Infinity;
+                if (newDist < existingDist) distances.set(n.toString(), newDist);
                 if (!remaining.includes2(n)) remaining.push(n);
             }
         }
