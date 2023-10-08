@@ -41,21 +41,22 @@ var simpleMap = (program: number[], steps:number, verbose = false) : Map<string,
     
     return coor;
 }
+var stringToCoor = (str: string) : [number, number] => str.split(',').tonum() as [number, number];
 
 var cleanMap = (map: Map<string, number>) : [number, number][] => 
-    Array.from(map).filter(x => x[1] != 0).map(x => x[0].split(',').tonum() as [number, number]);
+    Array.from(map).filter(x => x[1] != 0).map(x => stringToCoor(x[0]));
 
 var program = h.read(15, "program.txt")[0].split(',').tonum();
 
 // retrieve the map
 var map = simpleMap(program, 5E3);
 h.print(mapToString(map));
-var oxygen = Array.from(map).find(x => x[1] == 2)![0].split(',').tonum() as [number, number];
+var oxygen = Array.from(map).find(x => x[1] == 2)![0];
 
 // part 1
 var distances = h.simpleDijkstra(cleanMap(map), [0,0]);
-h.print("part 1:", distances.get(oxygen.toString()));
+h.print("part 1:", distances.get(oxygen));
 
 // part 2
-var distances2 = h.simpleDijkstra(cleanMap(map), oxygen);
+var distances2 = h.simpleDijkstra(cleanMap(map), stringToCoor(oxygen));
 h.print("part 2:", Array.from(distances2.values()).max());
