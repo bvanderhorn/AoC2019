@@ -45,6 +45,8 @@ export function print(...input:any[]): void {
 }
 
 export function printu(...input:any[]): void {
+    // print while clearing the last n lines in the terminal,
+    // where n is the number of lines in the input
     updateColors(input);
     var str = input.join(' ');
     var lines = str.split(/\r\n|\r|\n/).length;
@@ -53,6 +55,7 @@ export function printu(...input:any[]): void {
 }
 
 function clearLines(n:number): void {
+    // clear the last n lines in the terminal
     for (let i = 0; i < n; i++) {
       //first clear the current line, then clear the previous line
       if (i>0) process.stdout.moveCursor(0, -1);      
@@ -63,6 +66,7 @@ function clearLines(n:number): void {
 
 function updateColors(...input:any[]) : void {
     // replace special color indicators
+    // example: @@r this is red /@
     for (var i= 0; i < input.length; i++) {
         if (typeof input[i] === 'string') {
             var colors = input[i].matchAll(/\@\@(\w)/g);
@@ -75,11 +79,13 @@ function updateColors(...input:any[]) : void {
 }
 
 export function colorStr(input: any, color: string) : string {
+    // color a string; options: 'r', 'g', 'b', 'y', 'm', 'c', 'w'
 	var c = colorValueArray[colorNameArray.indexOf(color)];
 	return c + input + cOff;
 }
 
-export function sleep(ms:number) {
+export async function sleep(ms:number) : Promise<void> {
+    // sleep for ms milliseconds (use asynchroneously)
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
@@ -100,6 +106,11 @@ export function uniquea(array: number[][]) {
 
 export function isDivisible(num:number, div:number){
     return num % div === 0;
+}
+
+export function sign(num:number) : number {
+    // return the sign of a number (-1, 0, 1)
+    return num > 0 ? 1 : num < 0 ? -1 : 0;
 }
 
 export function overlaps(interval1:number[], interval2:number[]) : boolean {
@@ -125,18 +136,23 @@ export function mergeIntervals(intervals: number[][]) : number[][] {
 }
 
 export function isInInterval(interval:number[], number:number) : boolean {
+    // check if number is in interval
     return number >= interval[0] && number <= interval[1];
 }
 
 export function isInIntervals(intervals:number[][], number:number) : boolean {
+    // check if number is in any of the intervals
     return intervals.some(interval => isInInterval(interval, number));
 }
 
 export function range(start:number, end:number, step: number = 1) : number[] {
+    // return array of numbers from start to end (exclusive) with optional step size
     return Array.from({length: Math.floor((end - start)/step)}, (v, k) => (k*step) + start);
 }
 
 export function expand(coor1: number[], coor2: number[]) : number[][] {
+    // expand a line between two 2D coordinates to a list of coordinates
+    // note: it is assumed that either the x or y coordinate of both input coordinates is the same
     var varIndex = (coor1[0] === coor2[0]) ? 1 : 0;
     var start = Math.min(coor1[varIndex], coor2[varIndex]);
     var end = Math.max(coor1[varIndex], coor2[varIndex]);
@@ -145,6 +161,8 @@ export function expand(coor1: number[], coor2: number[]) : number[][] {
     return start === coor1[varIndex] ? expanded : expanded.reverse();
 }
 export function expandTrace(trace:number[][]) : number[][] {
+    // expand a trace of coordinates to a list of coordinates
+    // note: see also expand(coor1, coor2)
     var expTrace : number[][] = [trace[0]];
     for (let i=1;i<trace.length;i++) expTrace = expTrace.concat(expand(trace[i-1],trace[i]).slice(1));
     return expTrace;
@@ -200,13 +218,16 @@ export function simpleSolve(input: any[][]) : any[] {
 }
 
 export function ea(len:number|number[],fill:any = undefined) : any[] {
-        if (Array.isArray(len) && len.length > 1) return ea(len[0]).map(_ => ea(len.slice(1),fill));
-        if (Array.isArray(len)) return ea(len[0],fill);
-        return new Array(len).fill(fill);
+    // create an array with len elements, filled with fill
+    // note: create a multi-dimensional array by passing an array as len
+    if (Array.isArray(len) && len.length > 1) return ea(len[0]).map(_ => ea(len.slice(1),fill));
+    if (Array.isArray(len)) return ea(len[0],fill);
+    return new Array(len).fill(fill);
 }
 
 export function progress(counter:number,total:number, intervals:number = 100) {
-  if (counter % Math.floor(total/intervals) === 0) print((counter/total*100).toPrecision(3),'% done');
+    // print progress in percentage on given intervals
+    if (counter % Math.floor(total/intervals) === 0) print((counter/total*100).toPrecision(3),'% done');
 }
 
 export function dec2bin(dec:number) : string {
@@ -234,6 +255,9 @@ export function hex2bin(hex:string) : string {
 }
 
 export function factorize(num:number, verbose:boolean = false) : number[] {
+    // return the prime factors of a number
+    // note: if a prime factor occurs multiple times, it is returned multiple times
+    // note 2: if a number is negative, the factors of the absolute value are returned
     num = Math.abs(num);
     if (num == 1) return [1];
     var factors:number[] = [];
@@ -293,10 +317,12 @@ export function combineFactors2(nums:number[], verbose = false): number[] {
 }
 
 export function smallestCommonMultiple(nums:number[], verbose = false) : number {
+    // return the smallest number that is divisible by all numbers in the input array
     return combineFactors2(nums, verbose).prod();
 }
 
 export class MultiMap<K,V> {
+    // extension of the Map function to circumvent the 2^24-1 limit on the number of elements
     private readonly _maps : Map<K,V>[] = [];
     private readonly _maxMapSize = Math.pow(2, 24) -1;
 

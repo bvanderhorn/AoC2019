@@ -15,7 +15,7 @@ class TileState {
    public nextMove = () : number => {
 	   var xball = this.getx(4);
 	   var xpad = this.getx(3);
-	   return xball - xpad >0 ? 1 : xball - xpad <0 ? -1 : 0;
+	   return  h.sign(xball - xpad);
    }
    
    public getx = (tiletype:number) : number => {
