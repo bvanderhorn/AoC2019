@@ -9,8 +9,10 @@ var getCoor = (curCoor: [number, number], dir: string) : [number, number] =>
 var mapToArray = (map: Map<string, number>) : [number, number, number][] =>
     Array.from(map, ([k,v]) => [...k.split(',').map(x => +x), v] as [number, number, number]);
 
-var mapToString = (map: Map<string, number>) : string =>
-    h.coorToMap(mapToArray(map), getTile, " ", [[-22,22], [-22,22]]).stringc(x => "$*D".includes(x), 'c') + "\n";
+var mapToString = (map: Map<string, number>) : string => arrayToString(mapToArray(map));
+
+var arrayToString = (array: [number, number, number][]) : string =>
+    h.coorToMap(array, getTile, " ", [[-22,22], [-22,22]]).stringc(x => "$*D".includes(x), 'c') + "\n";
 
 var curMap = (map: Map<string, number>, curCoor: [number, number]) : string => {
     var coorCopy = new Map(map);
@@ -18,13 +20,13 @@ var curMap = (map: Map<string, number>, curCoor: [number, number]) : string => {
     return mapToString(coorCopy);
 }
 
-var simpleMap = (program: number[], steps:number = 1E6) : [number, number, number][] => {
+var simpleMap = (program: number[], steps:number = 1E6, verbose = false) : [number, number, number][] => {
     var coor: Map<string, number> = new Map<string, number>();
     var curCoor: [number, number] = [0,0];
     coor.set(curCoor.toString(), 3);
 
     var state = new ic.State(program.copy());
-    h.print(curMap(coor, curCoor));
+    if (verbose) h.print(curMap(coor, curCoor));
 
     // simple strategy: go any direction till first wall, then always keep wall left;
     // repeat for [steps], then return map
@@ -42,12 +44,14 @@ var simpleMap = (program: number[], steps:number = 1E6) : [number, number, numbe
             curCoor = nextCoor;
         }
         
-        h.printu(curMap(coor, curCoor));
+        if (verbose) h.printu(curMap(coor, curCoor));
     }
     
     return mapToArray(coor);
 }
 
 var program = h.read(15, "program.txt")[0].split(',').tonum();
+console.time("part 1");
 var map = simpleMap(program, 5E3);
-// h.coorToMap(map, getTile, " ").printc(x => "$*D".includes(x), 'c');
+h.print(arrayToString(map));
+console.timeEnd("part 1");
