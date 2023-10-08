@@ -84,13 +84,14 @@ export function colorStr(input: any, color: string) : string {
 	return c + input + cOff;
 }
 
-export function coorToMap(coor:[number, number, number][], translate: (x:number) => string, unchartered: string = ".") : string[][] {
+export function coorToMap(coor:[number, number, number][], translate: (x:number) => string, unchartered: string = ".", givenRange: [[number, number], [number, number]] | undefined = undefined) : string[][] {
     // draw a 2D map of coordinates
     // coor in format [x, y, value], where x is right and y is down
     // translate is a function that translates the value to a string
     // returns a 2D string array that can be printed using x.printc() or x.stringc()
-    var xRange = coor.map(x => x[0]).minmax();
-    var yRange = coor.map(x => x[1]).minmax();
+
+    var xRange = givenRange != undefined ? givenRange[0] : coor.map(x => x[0]).minmax();
+    var yRange = givenRange != undefined ? givenRange[1] : coor.map(x => x[1]).minmax();
     var str: string[][] = [];
     for (var y = yRange[0]; y <= yRange[1]; y++) {
         var curStr : string[] = [];
