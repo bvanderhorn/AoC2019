@@ -1,10 +1,10 @@
 import * as h from '../helpers';
 import * as ic from '../intcode';
 
-var getTile = (type:number) : string => "#.$*"[type];
-var getDirCode = (dir: string) : number => "^>v<".indexOf(dir) + 1;
+var getTile = (type:number) : string => "#.$*D"[type];
+var getDirCode = (dir: string) : number => "^v<>".indexOf(dir) + 1;
 var getCoor = (curCoor: [number, number], dir: string) : [number, number] => 
-    curCoor.plusEach([[0,1], [1,0], [0,-1], [-1,0]][getDirCode(dir) - 1]) as [number, number];
+    curCoor.plusEach([[0,-1], [0,1], [-1,0], [1,0]][getDirCode(dir) - 1]) as [number, number];
 
 var simpleMap = (program: number[], steps:number = 1E6) : [number, number, number][] => {
     var coor: Map<string, number> = new Map<string, number>();
@@ -14,23 +14,25 @@ var simpleMap = (program: number[], steps:number = 1E6) : [number, number, numbe
     var state = new ic.State(program.copy());
 
     // simple strategy: go any direction till first wall, then always keep wall left;
-    // repeat for 1E6 steps, then return map
+    // repeat for [steps], then return map
     var dir = "^";
     for (var i = 0; i < steps; i++) {
         var nextCoor = getCoor(curCoor, dir);
         state.input.push(getDirCode(dir));
         var output = state.runTillInputNeededOrHalt();
         var type = output[0];
-        coor.set(nextCoor.toString(), type);
+        if (!coor.get(nextCoor.toString())) coor.set(nextCoor.toString(), type);
         if (type == 0) {
             dir = "^>v<".get("^>v<".indexOf(dir) + 1);
         } else {
+            dir = "^>v<".get("^>v<".indexOf(dir) - 1);
             curCoor = nextCoor;
         }
     }
+    coor.set(curCoor.toString(), 4);
     return Array.from(coor, ([k,v]) => [...k.split(',').map(x => +x), v] as [number, number, number]);
 }
 
 var program = h.read(15, "program.txt")[0].split(',').tonum();
-var map = simpleMap(program, 1E2);
-h.coorToMap(map, getTile, " ").printc(x => "$*".includes(x), 'c');
+var map = simpleMap(program, 3E3);
+h.coorToMap(map, getTile, " ").printc(x => "$*D".includes(x), 'c');
