@@ -54,6 +54,22 @@ export function printu(...input:any[]): void {
     process.stdout.write(str);
 }
 
+export var video = (function() {
+    // https://stackoverflow.com/a/1479341/1716283
+    var firstIteration: boolean = true;
+
+    return {
+        frame: function (...input:any) {
+            if (firstIteration) {
+                print(...input);
+                firstIteration = false;
+            } else {
+                printu(...input);
+            }
+        }
+    }
+})
+
 function clearLines(n:number): void {
     // clear the last n lines in the terminal
     for (let i = 0; i < n; i++) {

@@ -20,8 +20,9 @@ var simpleMap = (program: number[], steps:number, verbose = false) : Map<string,
     var curCoor: [number, number] = [0,0];
     coor.set(curCoor.toString(), 3);
 
+    var f = h.video();
     var state = new ic.State(program.copy());
-    if (verbose) h.print(curMap(coor, curCoor));
+    if (verbose) f.frame(curMap(coor, curCoor));
 
     // simple strategy: go any direction till first wall, then always keep wall left;
     // repeat for [steps], then return map
@@ -36,7 +37,7 @@ var simpleMap = (program: number[], steps:number, verbose = false) : Map<string,
         dir = dirs.get(dirs.indexOf(dir) + (type==0 ? 1 : -1));
         if (type != 0) curCoor = nextCoor;
         
-        if (verbose) h.printu(curMap(coor, curCoor));
+        if (verbose) f.frame(curMap(coor, curCoor));
     }
     
     return coor;
@@ -49,7 +50,7 @@ var cleanMap = (map: Map<string, number>) : [number, number][] =>
 var program = h.read(15, "program.txt")[0].split(',').tonum();
 
 // retrieve the map
-var map = simpleMap(program, 5E3);
+var map = simpleMap(program, 5E3, true);
 h.print(mapToString(map));
 var oxygen = Array.from(map).find(x => x[1] == 2)![0];
 
