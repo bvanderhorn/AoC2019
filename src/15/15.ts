@@ -20,9 +20,8 @@ var simpleMap = (program: number[], steps:number, verbose = false) : Map<string,
     var curCoor: [number, number] = [0,0];
     coor.set(curCoor.toString(), 3);
 
-    var f = h.video();
     var state = new ic.State(program.copy());
-    if (verbose) f.frame(curMap(coor, curCoor));
+    var f = h.video();
 
     // simple strategy: go any direction till first wall, then always keep wall left;
     // repeat for [steps], then return map
