@@ -1,10 +1,5 @@
 import * as h from '../helpers';
 
-// const basePattern = [1,0,-1,0];
-// var getFromPattern = (n:number, index:number) : number => {
-//     var ims = index-n+1;
-//     return ims<0 ? 0 : basePattern[Math.floor(ims/n) % 4];
-// }
 var calculateIndex = (sequence:number[], index:number) : number => {
     var result = 0;
     var curP = 1;
@@ -39,7 +34,7 @@ for (var j=0;j<phases;j++) {
     else nextPhase(s1a, s1);
 }
 console.timeEnd("part 1");
-h.print("piece-wise part 1:", (phases%2===0 ? s1a : s1).slice(0,8).join(''));
+h.print("piece-wise part 1:", (phases%2===0 ? s1 : s1a).slice(0,8).join(''));
 
 // part 2
 var s2Set = sequence.copy();
@@ -47,7 +42,7 @@ var times = 1E4;
 var s2 = Array(s2Set.length * times).fill(0);
 s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
 
-var n = 500;
+var n = 100;
 console.time(`pt 2 first ${n} indices`);
 for (var i=0;i<n;i++) calculateIndex(s2, i);
 console.timeEnd(`pt 2 first ${n} indices`);
