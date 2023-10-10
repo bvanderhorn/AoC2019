@@ -41,22 +41,21 @@ var getFromPattern = (n:number, index:number) : number => {
 var calculateIndex = (sequence:number[], index:number) : number => {
     var n = index + 1;
     var result = 0;
-    var curP = 1;
+    var curP = true;
     var iP = 0;
     var i = n-1;
     var results = Array(10).fill(0);
     while(i<sequence.length) {
-	    results[sequence[i]] += curP;
+	    if (sequence[i] !=0) result += curP ? sequence[i] : -sequence[i];
 	    if(iP<n-1) {
 		    i++;
 		    iP++;
 	    } else {
 		    i+=n+1;
 		    iP=0;
-		    curP = -curP;
+		    curP = !curP;
 	    }
     }
-    var result = results.map((x,i) => x*i).reduce((a,b) => a+b);
     return Math.abs(result)%10;
 }
 var nextPhase = (curPhase:number[]) : number[] => {
@@ -76,7 +75,7 @@ s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
 h.print("s2 size:", s2.length);
 
 console.time("piece-wise single phase");
-var indices = h.range(0,1E4);
+var indices = h.range(0,500);
 for (var i of indices) calculateIndex(s2, i);
 console.timeEnd("piece-wise single phase");
 // h.print(s2.length/20/3600);
