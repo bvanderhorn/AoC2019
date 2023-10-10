@@ -37,22 +37,18 @@ const s09: string[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const n09 = h.range(0,10);
 // h.print(s09, "\n", n09);
 const s2nMap = new Map<string, number>(s09.map((x,i) => [x, n09[i]]));
+const bp = [1,0,-1,0];
 // h.print(s2nMap);
-var s2n = (s:string) : number => {
-    // if (!s2nMap.has(s)) throw new Error(`s2n invalid input: '${s}'`);
-    return s2nMap.get(s)!;
-}
 var n2s = (n:number) : string => s09[Math.abs(n)%10];
 var getFromPattern = (n:number, index:number) : number => {
-    var start = n-1;
-    if (index < start) return 0;
-    return [1,0,-1,0][Math.floor((index - start)/n) % 4];
+    var ims = index-n+1;
+    return ims<0 ? 0 : bp[Math.floor(ims/n) % 4];
 }
 var calculateIndex = (sequence:string[], index:number) : string => {
     var n = index + 1;
     var result = 0;
-    for (var i=0;i<sequence.length; i++) result += getFromPattern(n,i)*s2n(sequence[i]); 
-    return n2s(result);
+    for (var i=0;i<sequence.length; i++) result += getFromPattern(n,i)*s2nMap.get(sequence[i])!; 
+    return s09[Math.abs(result)%10];
 }
 var nextPhase = (curPhase:string[]) : string[] => {
     var out: string[] = Array(curPhase.length).fill("");
