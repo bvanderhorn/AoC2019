@@ -41,7 +41,20 @@ var getFromPattern = (n:number, index:number) : number => {
 var calculateIndex = (sequence:number[], index:number) : number => {
     var n = index + 1;
     var result = 0;
-    for (var i=0;i<sequence.length; i++) result += getFromPattern(n,i)*sequence[i]; 
+    var curP = 1;
+    var iP = 0;
+    var i = n-1;
+    while(i<sequence.length) {
+	    result += curP*sequence[i];
+	    if(iP<n-1) {
+		    i++;
+		    iP++;
+	    } else {
+		    i+=n+1;
+		    iP=0;
+		    curP = -curP;
+	    }
+    }
     return Math.abs(result)%10;
 }
 var nextPhase = (curPhase:number[]) : number[] => {
