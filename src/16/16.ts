@@ -33,25 +33,19 @@ console.timeEnd("part 1");
 h.print("part 1:", s1.slice(0,8).join(''));
 
 // part 2: piece-wise
-const s09: string[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-const n09 = h.range(0,10);
-// h.print(s09, "\n", n09);
-const s2nMap = new Map<string, number>(s09.map((x,i) => [x, n09[i]]));
 const bp = [1,0,-1,0];
-// h.print(s2nMap);
-var n2s = (n:number) : string => s09[Math.abs(n)%10];
 var getFromPattern = (n:number, index:number) : number => {
     var ims = index-n+1;
     return ims<0 ? 0 : bp[Math.floor(ims/n) % 4];
 }
-var calculateIndex = (sequence:string[], index:number) : string => {
+var calculateIndex = (sequence:number[], index:number) : number => {
     var n = index + 1;
     var result = 0;
-    for (var i=0;i<sequence.length; i++) result += getFromPattern(n,i)*s2nMap.get(sequence[i])!; 
-    return s09[Math.abs(result)%10];
+    for (var i=0;i<sequence.length; i++) result += getFromPattern(n,i)*sequence[i]; 
+    return Math.abs(result)%10;
 }
-var nextPhase = (curPhase:string[]) : string[] => {
-    var out: string[] = Array(curPhase.length).fill("");
+var nextPhase = (curPhase:number[]) : number[] => {
+    var out: number[] = Array(curPhase.length).fill(0);
     for (var i=0;i<curPhase.length; i++) {
         h.progress(i,curPhase.length,1E3);
         out[i] = calculateIndex(curPhase,i);
@@ -60,7 +54,7 @@ var nextPhase = (curPhase:string[]) : string[] => {
 }
 
 // piece-wise part 1
-var s2Set = sequence.copy().map((x:number) => x.toString());
+var s2Set = sequence.copy();
 var times = 1E4;
 var s2 = Array(s2Set.length * times).fill("");
 s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
