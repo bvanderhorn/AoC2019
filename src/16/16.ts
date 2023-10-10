@@ -19,7 +19,7 @@ var mod = (n:number) : void => {
 var sequence = h.read(16, "sequence.txt")[0].split('').tonum();
 
 var allPatterns = getAllPatterns(sequence.length);
-h.print("sequence:", sequence.join(''));
+// h.print("sequence:", sequence.join(''));
 var phases = 100;
 
 // part 1
@@ -37,7 +37,7 @@ const s09: string[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const n09 = h.range(0,10);
 // h.print(s09, "\n", n09);
 const s2nMap = new Map<string, number>(s09.map((x,i) => [x, n09[i]]));
-h.print(s2nMap);
+// h.print(s2nMap);
 var s2n = (s:string) : number => {
     // if (!s2nMap.has(s)) throw new Error(`s2n invalid input: '${s}'`);
     return s2nMap.get(s)!;
@@ -54,13 +54,23 @@ var calculateIndex = (sequence:string[], index:number) : string => {
     for (var i=0;i<sequence.length; i++) result += getFromPattern(n,i)*s2n(sequence[i]); 
     return n2s(result);
 }
-var nextPhase = (curPhase:string[]) : string[] => Array.apply(null, Array(curPhase.length)).map((_,i) => calculateIndex(curPhase,i));
+var nextPhase = (curPhase:string[]) : string[] => {
+    var out: string[] = Array(curPhase.length).fill("");
+    for (var i=0;i<curPhase.length; i++) {
+        h.progress(i,curPhase.length,1E3);
+        out[i] = calculateIndex(curPhase,i);
+    }
+    return out;
+}
 
 // piece-wise part 1
 var s2Set = sequence.copy().map((x:number) => x.toString());
-var times = 10;
-var s2 = Array.apply(null, Array(s2Set.length * times)).map((_,i) => s2Set[i%s2Set.length]);
+var times = 1E4;
+var s2 = Array(s2Set.length * times).fill("");
+s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
+h.print("s2 size:", s2.length);
+
 console.time("piece-wise single phase");
-for (var i=0;i<1;i++) s2 = nextPhase(s2);
+var first = calculateIndex(s2, 0);
 console.timeEnd("piece-wise single phase");
 // h.print("piece-wise part 1:", s2.slice(0,8).join(''));
