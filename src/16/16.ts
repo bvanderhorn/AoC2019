@@ -24,24 +24,29 @@ var phases = 100;
 
 // part 1
 var s1 = sequence.copy(); 
+console.time("part 1");
 for (var i=0;i<phases;i++) {
     s1 = applyPatterns(s1, allPatterns);
     // h.print("after", i+1, ":", s1.join(''));
 }
+console.timeEnd("part 1");
 h.print("part 1:", s1.slice(0,8).join(''));
 
 // part 2: piece-wise
-const s09 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+const s09: string[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const n09 = h.range(0,10);
 // h.print(s09, "\n", n09);
 const s2nMap = new Map<string, number>(s09.map((x,i) => [x, n09[i]]));
-var s2n = (s:string) : number => s2nMap.get(s) ?? -1;
+h.print(s2nMap);
+var s2n = (s:string) : number => {
+    // if (!s2nMap.has(s)) throw new Error(`s2n invalid input: '${s}'`);
+    return s2nMap.get(s)!;
+}
 var n2s = (n:number) : string => s09[Math.abs(n)%10];
 var getFromPattern = (n:number, index:number) : number => {
     var start = n-1;
     if (index < start) return 0;
-    var mod = Math.floor((index - start)/n) % 4;
-    return [1,0,-1,0][mod];
+    return [1,0,-1,0][Math.floor((index - start)/n) % 4];
 }
 var calculateIndex = (sequence:string[], index:number) : string => {
     var n = index + 1;
@@ -52,6 +57,10 @@ var calculateIndex = (sequence:string[], index:number) : string => {
 var nextPhase = (curPhase:string[]) : string[] => Array.apply(null, Array(curPhase.length)).map((_,i) => calculateIndex(curPhase,i));
 
 // piece-wise part 1
-var s1a = sequence.copy();
-for (var i=0;i<phases;i++) s1a = nextPhase(s1a);
-h.print("piece-wise part 1:", s1a.slice(0,8).join(''));
+var s2Set = sequence.copy().map((x:number) => x.toString());
+var times = 10;
+var s2 = Array.apply(null, Array(s2Set.length * times)).map((_,i) => s2Set[i%s2Set.length]);
+console.time("piece-wise single phase");
+for (var i=0;i<1;i++) s2 = nextPhase(s2);
+console.timeEnd("piece-wise single phase");
+// h.print("piece-wise part 1:", s2.slice(0,8).join(''));
