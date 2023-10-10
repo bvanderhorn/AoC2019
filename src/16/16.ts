@@ -16,19 +16,41 @@ var mod = (n:number) : void => {
     h.print("pattern ",n,":", l, "%", patternLength, "=>", modd,";", )
 }
 
-var sequence = h.read(16, "sequence.txt")[0].split('').tonum();
+var sequence = h.read(16, "sequence.txt", "ex")[0].split('').tonum();
 
-// var allPatterns = getAllPatterns(sequence.length);
-// h.print("sequence:", initSequence.join(''));
+var allPatterns = getAllPatterns(sequence.length);
+h.print("sequence:", sequence.join(''));
 var phases = 100;
 
 // part 1
-// var s1 = sequence.copy(); 
-// for (var i=0;i<phases;i++) s1 = applyPatterns(s1, allPatterns);
-// h.print("part 1:", s1.slice(0,8).join(''));
+var s1 = sequence.copy(); 
+// for (var i=0;i<phases;i++) {
+//     s1 = applyPatterns(s1, allPatterns);
+//     h.print("after", i+1, ":", s1.join(''));
+// }
+h.print("part 1:", s1.slice(0,8).join(''));
 
-// part 2
-h.print("sequence length:", sequence.length, "factors:", h.factorize(sequence.length));
-h.range(1,101).map(x => mod(x));
+// part 2: piece-wise
+const s09 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+const n09 = h.range(0,10);
+// h.print(s09, "\n", n09);
+h.print((-1)%10);
+const s2nMap = new Map<string, number>(s09.map((x,i) => [x, n09[i]]));
+var s2n = (s:string) : number => s2nMap.get(s) ?? -1;
+var n2s = (n:number) : string => {
+    if (n<0) throw new Error(`Invalid index: ${n}`);
+    return s09[n%10];
+}
+var getFromPattern = (n:number, index:number) : number => {
+    var start = n-1;
+    if (index < start) return 0;
+    var mod = Math.floor((index - start)/n) % 4;
+    return [1,0,-1,0][mod];
+}
+var calculateIndex = (sequence:string[], index:number) : string => {
+    var n = index + 1;
+    var result = 0;
+    for (var i=0;i<sequence.length; i++) result += getFromPattern(n,i)*s2n(sequence[i]); 
+    return n2s(result);
+}
 
-h.print(1E4%6);
