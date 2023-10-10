@@ -44,8 +44,9 @@ var calculateIndex = (sequence:number[], index:number) : number => {
     var curP = 1;
     var iP = 0;
     var i = n-1;
+    var results = Array(10).fill(0);
     while(i<sequence.length) {
-	    result += curP*sequence[i];
+	    results[sequence[i]] += curP;
 	    if(iP<n-1) {
 		    i++;
 		    iP++;
@@ -55,6 +56,7 @@ var calculateIndex = (sequence:number[], index:number) : number => {
 		    curP = -curP;
 	    }
     }
+    var result = results.map((x,i) => x*i).reduce((a,b) => a+b);
     return Math.abs(result)%10;
 }
 var nextPhase = (curPhase:number[]) : number[] => {
