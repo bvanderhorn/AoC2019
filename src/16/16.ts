@@ -63,4 +63,5 @@ h.print("s2 size:", s2.length);
 console.time("piece-wise single phase");
 var first = calculateIndex(s2, 0);
 console.timeEnd("piece-wise single phase");
+h.print(s2.length/20/3600);
 // h.print("piece-wise part 1:", s2.slice(0,8).join(''));
