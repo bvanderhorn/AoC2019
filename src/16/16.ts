@@ -49,10 +49,18 @@ var s2 : number[]= Array(s2Set.length * times).fill(0);
 s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
 
 var n = 1E5;
-var pb = new h.ProgressBar(n, 1E2);
-console.time(`pt 2 first ${n} indices`);
+// h.print(`pt 2 first ${n} indices`);
+// var pb = new h.ProgressBar(n, 1E2);
+// for (var i=0;i<n;i++) {
+//     pb.show(i);
+//     calculateToIndex(s2, i);
+// }
+
+n = 4E5;
+h.print(`pt 2 last ${n} indices:`);
+var pb2 = new h.ProgressBar(n, 1E2);
+var last = s2.length -1;
 for (var i=0;i<n;i++) {
-    pb.show(i);
-    calculateToIndex(s2, i);
-} 
-console.timeEnd(`pt 2 first ${n} indices`);
+    pb2.show(i);
+    calculateToIndex(s2, last-i);
+}

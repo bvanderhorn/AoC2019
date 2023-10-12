@@ -307,22 +307,73 @@ export class ProgressBar {
     private _vid = video();
     private _total: number;
     private _intervals:number;
-    constructor(total:number, intervals:number = 1E2) {
+    private _barLength:number;
+    private _init: number = Date.now();
+    constructor(total:number, intervals:number = 1E2, barLength:number = 50) {
         this._total = total;
         this._intervals = intervals;
+        this._barLength = barLength;
     }
 
     public show = (counter:number) : void => {
-        if (counter % Math.floor(this._total/this._intervals) === 0) {
-            // total string of 50, done % white, rest gray
+        if ((counter % Math.floor(this._total/this._intervals) === 0) ||( counter == this._total-1)) {
+            // total string of _barLength, done % white, rest gray, including elapsed and projected times
+            var elapsed = Date.now() - this._init;
             var done = counter/this._total;
-            var n = 50;
-            var stringDone = Math.round(done*n);
+            var projected = done === 0 ? 0 : elapsed/done;
+            var stringDone = Math.round(done*this._barLength);
             var white = whiteBlock.repeat(stringDone);
-            var gray = grayBlock.repeat(n-stringDone);
-            this._vid.frame(white + gray, " ", (counter/this._total*100).toPrecision(3),'%');
+            var gray = grayBlock.repeat(this._barLength-stringDone);
+
+            // construct string
+            var barString = white + gray + " " + (counter/this._total*100).toFixed(1) +
+            '% (elapsed:' + msToSensible(elapsed);
+            if (counter != this._total-1) barString += ', projected:' + msToSensible(projected);
+            barString += ')';
+
+            // print
+            this._vid.frame(barString);
         }
     }
+}
+
+export function msToSensible(msIn:number) : string {
+    // convert milliseconds to a sensible string
+    if (msIn === 0) return "0ms";
+    
+    var seconds = Math.floor(msIn/1000);
+    var ms = Math.round(msIn % 1000);
+    var minutes = Math.floor(seconds/60);
+    seconds = seconds % 60;
+    var hours = Math.floor(minutes/60);
+    minutes = minutes % 60;
+    var days = Math.floor(hours/24);
+    hours = hours % 24;
+    var years = Math.floor(days/365);
+    days = days % 365;
+
+    var amounts:number[] = [years, days, hours, minutes, seconds, ms];
+    var units:string[] = ['y', 'd', 'h', 'm', 's', 'ms'];
+    var str = '';
+    var i = amounts.findIndex(x => x > 0);
+    while (i < amounts.length) {
+        var u = units[i];
+        var a = amounts[i];
+        if (u == 's') {
+            var astr = '';
+            if (a<10 && amounts.slice(0,4).sum()==0) {
+                a += amounts[i+1]/1000;
+                astr = a.toFixed(2);
+            } else {
+                astr = a.toString();
+            }
+            return str + astr + u;
+        }
+
+        str += a + u;
+        i++;
+    }
+    return str;
 }
 
 export function dec2bin(dec:number) : string {
