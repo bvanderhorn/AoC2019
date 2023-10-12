@@ -9,6 +9,9 @@ export const magenta = "\x1b[35m";
 export const cyan = "\x1b[36m";
 export const white = "\x1b[37m";
 
+export const whiteBlock = '\u2588';
+export const grayBlock = '\u2591';
+
 export const colorValueArray = [white, green, red, yellow, cyan, blue, magenta];
 export const colorNameArray = ['w','g','r','y','c', 'b','m'];
 

@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { cOff, colorNameArray, colorValueArray , equals2} from "./ArrayExtensions";
+import { cOff, colorNameArray, colorValueArray , equals2, whiteBlock, grayBlock} from "./ArrayExtensions";
 export * from "./ArrayExtensions";
 
 const sourceFolder = '../../src/';
@@ -57,14 +57,13 @@ export function printu(...input:any[]): void {
 export var video = (function() {
     // https://stackoverflow.com/a/1479341/1716283
     var firstIteration: boolean = true;
-
     return {
         frame: function (...input:any) {
             if (firstIteration) {
                 print(...input);
                 firstIteration = false;
             } else {
-                printu(...input);
+                printu(...input, "\n");
             }
         }
     }
@@ -302,6 +301,28 @@ export function ea(len:number|number[],fill:any = undefined) : any[] {
 export function progress(counter:number,total:number, intervals:number = 100) {
     // print progress in percentage on given intervals
     if (counter % Math.floor(total/intervals) === 0) print((counter/total*100).toPrecision(3),'% done');
+}
+
+export class ProgressBar {
+    private _vid = video();
+    private _total: number;
+    private _intervals:number;
+    constructor(total:number, intervals:number = 1E2) {
+        this._total = total;
+        this._intervals = intervals;
+    }
+
+    public show = (counter:number) : void => {
+        if (counter % Math.floor(this._total/this._intervals) === 0) {
+            // total string of 50, done % white, rest gray
+            var done = counter/this._total;
+            var n = 50;
+            var stringDone = Math.round(done*n);
+            var white = whiteBlock.repeat(stringDone);
+            var gray = grayBlock.repeat(n-stringDone);
+            this._vid.frame(white + gray, " ", (counter/this._total*100).toPrecision(3),'%');
+        }
+    }
 }
 
 export function dec2bin(dec:number) : string {
