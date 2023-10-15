@@ -108,7 +108,7 @@ var s2 : number[]= Array(s2Set.length * times).fill(0);
 s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
 
 var s2FinalSequence = applyPhases(s2, phases, true);
-h.write(8, "final_sequence.txt", s2FinalSequence.join(''));
+h.write(16, "final_sequence.txt", s2FinalSequence.join(''));
 var messageOffset = +sequence.slice(0,7).join('');
 h.print("message offset:",messageOffset);
 var message = s2FinalSequence.slice(messageOffset, messageOffset+8);
