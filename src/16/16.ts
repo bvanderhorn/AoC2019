@@ -18,9 +18,19 @@ var calculateIndexRaw = (sequence:number[], index:number) : number => {
     }
     return result;
 }
+var getSetSum = (sequence: number[], index: number, length: number) : number => {
+	var result = 0;
+	var max = index+length-1;
+	while(index<=max && index<sequence.length) {
+		result += sequence[index];
+		index++;
+	}
+	return result;
+}
 var calculateIndexWithDiff = (sequence:number[], index:number, last: number) : number => {
 	// only works if index >= sqrt(n)
-	
+	var n = index + 1;
+
 }
 var lastDigit = (xk:number) : number => Math.abs(xk)%10;
 var nextPhase = (curPhase:number[], out:number[]) : void => {
