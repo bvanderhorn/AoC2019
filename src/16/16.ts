@@ -1,6 +1,6 @@
 import * as h from '../helpers';
 
-var calculateToIndex = (sequence:number[], index:number) : number => {
+var calculateIndexRaw = (sequence:number[], index:number) : number => {
     var result = 0;
     var curP = 1;
     var iP = 0;
@@ -16,8 +16,13 @@ var calculateToIndex = (sequence:number[], index:number) : number => {
 		    curP = -curP;
 	    }
     }
-    return Math.abs(result)%10;
+    return result;
 }
+var calculateIndexWithDiff = (sequence:number[], index:number, last: number) : number => {
+	// only works if index >= sqrt(n)
+	
+}
+var lastDigit = (xk:number) : number => Math.abs(xk)%10;
 var nextPhase = (curPhase:number[], out:number[]) : void => {
     for (var i=0;i<curPhase.length; i++) out[i] = calculateToIndex(curPhase,i);
 }
