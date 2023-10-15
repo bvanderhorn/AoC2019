@@ -60,35 +60,46 @@ var nextPhase = (curPhase:number[], out:number[]) : void => {
     for (var i=0;i<curPhase.length; i++) out[i] = lastDigit(calculateIndexRaw(curPhase,i));
 }
 
-var nextPhase2 = (curPhase:number[], out:number[]) : void => {
+var nextPhase2 = (curPhase:number[], out:number[], verbose:boolean = false, maxIndex:number = curPhase.length) : void => {
     var sequenceLengthRoot = Math.sqrt(curPhase.length);
     var diffIndex = Math.ceil(sequenceLengthRoot);
-    //h.print("sequence length ",curPhase.length, "square root:",sequenceLengthRoot, "=> first diff calculated index: ", diffIndex);
+
+    h.printVerbose(verbose, "sequence length ",curPhase.length, "square root:",sequenceLengthRoot, "=> first diff calculated index: ", diffIndex);
 
     var lastValue = 0;
-    for (var i=0;i<curPhase.length; i++) {
+    var pb = new h.ProgressBar(maxIndex, 1E2);
+    for (var i=0;i<maxIndex; i++) {
+        pb.show(i, verbose);
         lastValue = i<diffIndex
             ? calculateIndexRaw(curPhase,i)
             : calculateIndexWithDiff(curPhase,i,lastValue);
         
         out[i] = lastDigit(lastValue);
     }
+}
 
+var applyPhases = (sequence:number[], phases:number, verbose=false) : number[] => {
+    var s1 = sequence.copy();
+    var s2 = sequence.copy();
+
+    var pb = new h.ProgressBar(phases, 1E2);
+    for (var j=0;j<phases;j++) {
+        pb.show(j, verbose);
+        if (j%2===0) nextPhase2(s1, s2);
+        else nextPhase2(s2, s1);
+    }
+
+    return phases%2===0 ? s1 : s2;
 }
 
 var sequence = h.read(16, "sequence.txt")[0].split('').tonum();
 var phases = 100;
 
 // part 1
-var s1 = sequence.copy();
-var s1a = sequence.copy();
 console.time("part 1");
-for (var j=0;j<phases;j++) {
-    if (j%2===0) nextPhase2(s1, s1a);
-    else nextPhase2(s1a, s1);
-}
+var finalSequence = applyPhases(sequence, phases);
 console.timeEnd("part 1");
-h.print("piece-wise part 1:", (phases%2===0 ? s1 : s1a).slice(0,8).join(''));
+h.print("piece-wise part 1:", finalSequence.slice(0,8).join(''));
 
 // part 2
 var s2Set = sequence.copy();
@@ -96,11 +107,11 @@ var times = 1E4;
 var s2 : number[]= Array(s2Set.length * times).fill(0);
 s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
 
-
 // h.print(`pt 2 first ${s2.length} indices`);
-// var firstArray = Array(s2.length).fill(0);
-// var pb = new h.ProgressBar(n, 1E2);
-// for (var i=0;i<n;i++) {
+// nextPhase2(s2, s2a,true);
+// var firstArray = Array(maxIndex).fill(0);
+// var pb = new h.ProgressBar(maxIndex, 1E2);
+// for (var i=0;i<maxIndex;i++) {
 //     pb.show(i);
 //     firstArray[i] = lastDigit(calculateIndexRaw(s2, i));
 // }
