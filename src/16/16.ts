@@ -107,11 +107,8 @@ var times = 1E4;
 var s2 : number[]= Array(s2Set.length * times).fill(0);
 s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
 
-// h.print(`pt 2 first ${s2.length} indices`);
-// nextPhase2(s2, s2a,true);
-// var firstArray = Array(maxIndex).fill(0);
-// var pb = new h.ProgressBar(maxIndex, 1E2);
-// for (var i=0;i<maxIndex;i++) {
-//     pb.show(i);
-//     firstArray[i] = lastDigit(calculateIndexRaw(s2, i));
-// }
+var s2FinalSequence = applyPhases(s2, phases, true);
+var messageOffset = +s2FinalSequence.slice(0,7).join('');
+h.print("message offset:",messageOffset);
+var message = s2FinalSequence.slice(messageOffset, messageOffset+8);
+h.print("part 2:", +message.join(''));
