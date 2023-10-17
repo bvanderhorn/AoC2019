@@ -315,9 +315,12 @@ export class ProgressBar {
         this._barLength = barLength;
     }
 
-    public show = (counter:number, verbose:boolean = true) : void => {
+    public show = (counterIn:number, verbose:boolean = true) : void => {
+        // for indices starting at 0
+        // place pb.show() at the end of your for loop for best result
         if (!verbose) return;
-        var max = this._total -1;
+        var counter = counterIn+1; 
+        var max = this._total;
         if ((counter % Math.floor(this._total/this._intervals) === 0) ||( counter == max)) {
             // total string of _barLength, done % white, rest gray, including elapsed and projected times
             var elapsed = Date.now() - this._init;
