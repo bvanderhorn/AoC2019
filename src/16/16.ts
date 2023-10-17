@@ -101,11 +101,19 @@ var finalSequence = applyPhases(sequence, phases);
 console.timeEnd("part 1");
 h.print("piece-wise part 1:", finalSequence.slice(0,8).join(''));
 
+
 // part 2
 var s2Set = sequence.copy();
 var times = 1E4;
 var s2 : number[]= Array(s2Set.length * times).fill(0);
 s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
+
+// testing
+var testTime = (sequence:number[],maxIndex:number) : void => {
+    nextPhase2(sequence, Array(sequence.length).fill(0), true,maxIndex);
+}
+
+testTime(s2,32);
 
 var s2FinalSequence = applyPhases(s2, phases, true);
 h.write(16, "final_sequence.txt", s2FinalSequence.join(''));

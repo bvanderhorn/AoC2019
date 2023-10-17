@@ -317,20 +317,27 @@ export class ProgressBar {
 
     public show = (counter:number, verbose:boolean = true) : void => {
         if (!verbose) return;
-        if ((counter % Math.floor(this._total/this._intervals) === 0) ||( counter == this._total-1)) {
+        var max = this._total -1;
+        if ((counter % Math.floor(this._total/this._intervals) === 0) ||( counter == max)) {
             // total string of _barLength, done % white, rest gray, including elapsed and projected times
             var elapsed = Date.now() - this._init;
             var done = counter/this._total;
             var projected = done === 0 ? 0 : elapsed/done;
-            var stringDone = Math.round(done*this._barLength);
-            var white = whiteBlock.repeat(stringDone);
-            var gray = grayBlock.repeat(this._barLength-stringDone);
+            var stringDone = counter != max 
+                ? Math.round(done*this._barLength)
+                : this._barLength;
+
+            var percentage = counter != max
+                ? (counter/this._total*100).toFixed(1)
+                : 100;
 
             // construct string
-            var barString = white + gray + " " + (counter/this._total*100).toFixed(1) +
-            '% (elapsed:' + msToSensible(elapsed);
-            if (counter != this._total-1) barString += ', projected:' + msToSensible(projected);
-            barString += ')';
+            var white = whiteBlock.repeat(stringDone);
+            var gray = grayBlock.repeat(this._barLength-stringDone);
+            var elapsedString = 'elapsed:' + msToSensible(elapsed);
+            var projectedString = ', projected:' + msToSensible(projected);
+            
+            var barString = white + gray + " " + percentage + '% (' + elapsedString +  (counter != max ? projectedString : "") + ')';
 
             // print
             this._vid.frame(barString);
