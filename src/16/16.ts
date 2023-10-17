@@ -55,49 +55,119 @@ var calculateIndexWithDiff = (sequence:number[], index:number, last: number) : n
 
     return result;
 }
+
+var getLookup = (lookups:number[][], lookupIndex:number, index:number) : number => {
+    var nofLookups = lookups.length/2;
+    var [curp0, ip0] = getCurpIp(index,lookupIndex*nofLookups);
+    var [curp1, ip1] = getCurpIp(index, (lookupIndex+1)*nofLookups-1);
+    if (curp0 === 0) {
+        if (curp1 === 0) return 0;
+        return curp1*lookups[2*nofLookups -(ip1+1)][lookupIndex];
+    }
+    else if (curp1 == curp0) return curp1*lookups[nofLookups][lookupIndex];
+
+    // else: curp0 != 0, curp1 == 0
+    var i = index - ip0 + 1;
+    return curp0*lookups[i][lookupIndex];
+}
+
+var calculateIndexWithLookups = (sequence:number[], index:number, lookups:number[][]) : number => {
+    // only works if index >= lookups.length/2
+    var nofLookups = lookups.length/2;
+    var llength = sequence.length/nofLookups;
+    var result = 0;
+    for (var l=0;l<llength;l++) result += getLookup(lookups, l,index);
+    return result;
+}
 var lastDigit = (xk:number) : number => Math.abs(xk)%10;
 var nextPhase = (curPhase:number[], out:number[]) : void => {
     for (var i=0;i<curPhase.length; i++) out[i] = lastDigit(calculateIndexRaw(curPhase,i));
 }
 
-var nextPhase2 = (curPhase:number[], out:number[], verbose:boolean = false, maxIndex:number = curPhase.length) : void => {
-    var sequenceLengthRoot = Math.sqrt(curPhase.length);
-    var diffIndex = Math.ceil(sequenceLengthRoot);
+var nextPhase3 = (curPhase:number[], out:number[], nofLookups:number = 25, verbose:boolean = false, maxIndex:number = curPhase.length) : void => {
 
-    h.printVerbose(verbose, "sequence length ",curPhase.length, "square root:",sequenceLengthRoot, "=> first diff calculated index: ", diffIndex);
+    var pb = new h.ProgressBar(maxIndex, 1E2);
+    var lookups = getLookups(curPhase, nofLookups);
+    var sequenceLengthRoot = Math.sqrt(curPhase.length);
+    var diffIndex = 2*Math.ceil(sequenceLengthRoot);
 
     var lastValue = 0;
-    var pb = new h.ProgressBar(maxIndex, 1E2);
     for (var i=0;i<maxIndex; i++) {
-        pb.show(i, verbose);
-        lastValue = i<diffIndex
+
+        // 0 <= i < nofLookups: calculate raw
+        // nofLookups <= i < 2*sqrt(sequence.length): use lookups
+        // i >= 2*sqrt(sequence.length): calculate using diffs
+        lastValue = i<nofLookups && i<diffIndex
             ? calculateIndexRaw(curPhase,i)
-            : calculateIndexWithDiff(curPhase,i,lastValue);
+            : i < diffIndex
+                ? calculateIndexWithLookups(curPhase, i,lookups)
+                : calculateIndexWithDiff(curPhase,i,lastValue);
         
         out[i] = lastDigit(lastValue);
+        pb.show(i, verbose);
     }
+
 }
 
-var applyPhases = (sequence:number[], phases:number, verbose=false) : number[] => {
+var applyPhases3 = (sequence:number[], phases:number, nofLookups:number = 25, verbose=false) : number[] => {
     var s1 = sequence.copy();
     var s2 = sequence.copy();
 
     var pb = new h.ProgressBar(phases, 1E2);
     for (var j=0;j<phases;j++) {
         pb.show(j, verbose);
-        if (j%2===0) nextPhase2(s1, s2);
-        else nextPhase2(s2, s1);
+        if (j%2===0) nextPhase3(s1, s2,nofLookups);
+        else nextPhase3(s2, s1,nofLookups);
     }
 
     return phases%2===0 ? s1 : s2;
 }
 
+var getCurpIp = (index:number, startIndex: number) : [number, number] => {
+    var delta = startIndex-index;
+    var n = index + 1;
+
+    if (delta<0) return [0, startIndex];
+
+    var mod = Math.floor(delta/n) % 4;
+    var curp = basePattern[mod];
+
+    var ip = delta % n;
+    return [curp, ip];
+}
+
+var getLookups = (sequence:number[], nofLookups:number) : number[][] => {
+    var llength = sequence.length/nofLookups;
+    var arr = Array(llength).fill(0);
+    var lookups: number[][] = Array(nofLookups*2).fill([]);
+    lookups[0] = arr.slice(0);
+
+    // left upbuild
+    for (var l = 1; l <= nofLookups; l++) { // each lookup
+        lookups[l] = arr.slice(0);
+        for (var j = 0; j < llength; j++) { // each index in the lookup
+            lookups[l][j] = lookups[l - 1][j] + sequence[j * nofLookups + l - 1];
+        }
+    }
+
+    // right downbuild
+    for (var l = 1; l < nofLookups; l++) { // each lookup
+        lookups[l + nofLookups] = arr.slice(0);
+        for (var j = 0; j < llength; j++) { // each index in the lookup
+            lookups[l + nofLookups][j] = lookups[l + nofLookups - 1][j] - sequence[j * nofLookups + l-1];
+        }
+    }
+
+    return lookups;
+}
+
 var sequence = h.read(16, "sequence.txt")[0].split('').tonum();
 var phases = 100;
+const basePattern = [1,0,-1,0];
 
 // part 1
 console.time("part 1");
-var finalSequence = applyPhases(sequence, phases);
+var finalSequence = applyPhases3(sequence, phases);
 console.timeEnd("part 1");
 h.print("piece-wise part 1:", finalSequence.slice(0,8).join(''));
 
@@ -108,14 +178,13 @@ var times = 1E4;
 var s2 : number[]= Array(s2Set.length * times).fill(0);
 s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
 
-// testing
-var testTime = (sequence:number[],maxIndex:number) : void => {
-    nextPhase2(sequence, Array(sequence.length).fill(0), true,maxIndex);
+// // testing
+var testTime = (sequence:number[],maxIndex:number = sequence.length) : void => {
+    nextPhase3(sequence, Array(sequence.length).fill(0), 400, true,maxIndex);
 }
+// testTime(s2);
 
-testTime(s2,32);
-
-var s2FinalSequence = applyPhases(s2, phases, true);
+var s2FinalSequence = applyPhases3(s2, phases, 400, true);
 h.write(16, "final_sequence.txt", s2FinalSequence.join(''));
 var messageOffset = +sequence.slice(0,7).join('');
 h.print("message offset:",messageOffset);
