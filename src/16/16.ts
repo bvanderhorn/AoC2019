@@ -115,9 +115,9 @@ var applyPhases3 = (sequence:number[], phases:number, nofLookups:number = 25, ve
 
     var pb = new h.ProgressBar(phases, 1E2);
     for (var j=0;j<phases;j++) {
-        pb.show(j, verbose);
         if (j%2===0) nextPhase3(s1, s2,nofLookups);
         else nextPhase3(s2, s1,nofLookups);
+        pb.show(j, verbose);
     }
 
     return phases%2===0 ? s1 : s2;
