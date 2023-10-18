@@ -59,9 +59,7 @@ var calculateIndexWithDiff = (sequence:number[], index:number, last: number) : n
 var getLookup = (lookups:number[][], lookupIndex:number, index:number, c1i1c2i2:[number, number, number, number]) : number => {
     var nofLookups = lookups.length/2;
     var [curp0, ip0, curp1, ip1] = c1i1c2i2;
-    // var [curp0, ip0, curp1, ip1] = getCurpIp2(index, nofLookups, lookupIndex);
-    // var [curp0, ip0] = getCurpIp(index,lookupIndex*nofLookups);
-    // var [curp1, ip1] = getCurpIp(index, (lookupIndex+1)*nofLookups-1);
+
     if (curp0 === 0) {
         if (curp1 === 0) return 0;
         return curp1*lookups[2*nofLookups -(ip1+1)][lookupIndex];
@@ -74,8 +72,7 @@ var getLookup = (lookups:number[][], lookupIndex:number, index:number, c1i1c2i2:
 }
 
 var moveCurpIp = (curp:number, ip:number, last:number, index:number, isStart:boolean, move:number) : [number, number,boolean, number] => {
-    var n = index + 1;
-    var limit = isStart ? index : n;
+    var limit = isStart ? index : index + 1;
     var ipraw = ip+move;
     if (ipraw < limit) return [curp, ipraw, isStart, last];
     return [curp === 0 ? -last : 0, ipraw-limit, false, curp === 0 ? last: -last];
@@ -97,23 +94,17 @@ var calculateIndexWithLookups = (sequence:number[], index:number, lookups:number
     return result;
 }
 var lastDigit = (xk:number) : number => Math.abs(xk)%10;
-var nextPhase = (curPhase:number[], out:number[]) : void => {
-    for (var i=0;i<curPhase.length; i++) out[i] = lastDigit(calculateIndexRaw(curPhase,i));
-}
 
 var nextPhase3 = (curPhase:number[], out:number[], lookupIterations:number[] = [25], diffIndex: number = Math.ceil(Math.sqrt(curPhase.length)), verbose:boolean = false, maxIndex:number = curPhase.length) : void => {
     var allLookups = getAllLookups(curPhase, lookupIterations);
     var pb = new h.ProgressBar(maxIndex, 1E2);
-    // var lookups = getLookups(curPhase, nofLookups);
-    // var sequenceLengthRoot = Math.sqrt(curPhase.length);
-    // var diffIndex = 3*Math.ceil(sequenceLengthRoot);
 
     var lastValue = 0;
     for (var i=0;i<maxIndex; i++) {
 
         // 0 <= i < nofLookups: calculate raw
-        // nofLookups <= i < 2*sqrt(sequence.length): use lookups
-        // i >= 2*sqrt(sequence.length): calculate using diffs
+        // nofLookups <= i < diffIndex (default:sqrt(sequence.length)): use lookups
+        // i >= diffIndex: calculate using diffs
         if (i<lookupIterations[0] && i<diffIndex) lastValue = calculateIndexRaw(curPhase,i);
         else if (i < diffIndex) {
             var iteration = lookupIterations.findIndex((x,j) => i>=x && ((j == lookupIterations.length-1) || i<lookupIterations[j+1]));
@@ -140,47 +131,6 @@ var applyPhases3 = (sequence:number[], phases:number, lookupIterations:number[] 
     }
 
     return phases%2===0 ? s1 : s2;
-}
-
-var getCurpIp = (index:number, startIndex: number) : [number, number] => {
-    var delta = startIndex-index;
-    var n = index + 1;
-
-    if (delta<0) return [0, startIndex];
-
-    var mod = Math.floor(delta/n) % 4;
-    var curp = basePattern[mod];
-
-    var ip = delta % n;
-    return [curp, ip];
-}
-
-var getCurpIp2 = (index:number, loopLength:number, loopIndex:number) : [number, number, number, number] => {
-    var n = index + 1;
-    var startIndex = loopIndex*loopLength;
-    var delta = startIndex-index;
-    // var delta2 = delta+loopLength-1;
-    var [curp, ip, cur2, ip2] = [0,0,0,0];
-
-    if (delta<0) {
-        [curp, ip]  = [0, startIndex];
-        var ip2raw = ip + loopLength -1;
-        if (ip2raw>=index) [cur2, ip2] = [1,ip2raw-index];
-        else [cur2, ip2] = [0, ip2raw];
-    }
-    else {
-        var mod = Math.floor(delta/n) % 4;
-        curp = basePattern[mod];
-        ip = delta % n;
-        var ip2raw = ip + loopLength-1;
-        if (ip2raw>=n) [cur2, ip2] = [basePattern[(mod+1)%4], ip2raw-n];
-        else [cur2, ip2] = [curp, ip2raw];
-    }
-    // var [curptest, iptest, curptest2, iptest2] = [getCurpIp(index, loopLength*loopIndex), getCurpIp(index, (loopIndex+1)*loopLength-1)].flat();
-    // if (curp != curptest || ip != iptest || cur2 != curptest2 || ip2 != iptest2) {
-    //     throw new Error("wrong!");
-    // }
-    return [curp, ip, cur2, ip2];
 }
 
 var getAllLookups = (sequence:number[], lookupIterations:number[]) : number[][][] => lookupIterations.map(i => getLookups(sequence,i));
@@ -211,7 +161,7 @@ var getLookups = (sequence:number[], nofLookups:number) : number[][] => {
 
 var sequence = h.read(16, "sequence.txt")[0].split('').tonum();
 var phases = 100;
-const basePattern = [1,0,-1,0];
+// const basePattern = [1,0,-1,0];
 
 // part 1
 console.time("part 1");
@@ -230,6 +180,8 @@ s2 = s2.map((_,i) => s2Set[i%s2Set.length]);
 var testTime = (sequence:number[],maxIndex:number = sequence.length) : void => {
     nextPhase3(sequence, Array(sequence.length).fill(0), [100,200,500,1000,2000,5000], 3*Math.ceil(Math.sqrt(sequence.length)), true,maxIndex);
 }
+
+// testTime(s2, 5100);
 
 var s2FinalSequence = applyPhases3(s2, phases, [100,200,500,1000,2000,5000], 3*Math.ceil(Math.sqrt(s2.length)),true);
 // h.write(16, "final_sequence.txt", s2FinalSequence.join(''));
