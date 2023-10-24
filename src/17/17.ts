@@ -20,6 +20,11 @@ h.write(17,"output.txt",output.join(','));
 h.print(output.length);
 // show(output).printc(x => '^>v<X'.includes(x));
 const map  = show(output).replace(/[\^>v<X]/g,'#');
-h.print(map);
+// h.print(map);
 const crossings = getCrossings(map);
 h.print(crossings);
+
+var colCrossings = map.split('\n').split('').mapij((i,j,x) => crossings.includes2([j,i]) ? h.colorStr(x,'r') : x).map(x => x.join('')).join('\n');
+h.print(colCrossings);
+
+h.print("part 1:", crossings.map(x => x.prod()).sum());
