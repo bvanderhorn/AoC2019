@@ -97,6 +97,10 @@ declare global {
     interface String {
         get(index: number) : string;
         slice2(start:number, end:number) : string;
+        stringc(matches: (x: any) => boolean) : string;
+        stringc(matches: (x: any) => boolean, color:string) : string;
+        printc(matches: (x: any) => boolean) : void;
+        printc(matches: (x: any) => boolean, color:string) : void;
     }
 
     interface Set<T> {
@@ -158,6 +162,18 @@ if(!Array.prototype.printc) {
     });
 }
 
+if (!String.prototype.printc) {
+    // color specified elements of a string and print the result
+    Object.defineProperty(String.prototype, 'printc', {
+        enumerable: false,
+        writable: false,
+        configurable: false,
+        value: function printc(this: string, matches:(x:any) => boolean, color:string = 'r') : void {
+            console.log(this.stringc(matches,color));
+        }
+    });
+}
+
 if(!Array.prototype.stringc) {
 	// convert to string but specify if a given element should be printed with a given color
 	Object.defineProperty(Array.prototype, 'stringc', {
@@ -177,6 +193,20 @@ if(!Array.prototype.stringc) {
                 return this.slice(0,sub[0]).map(x => matches(x) ? `${start}${x}${end}`: `${x}`).join(j1);
             }
             
+        }
+    });
+}
+
+if (!String.prototype.stringc) {
+    // color specified elements of a string
+    Object.defineProperty(String.prototype, 'stringc', {
+        enumerable: false,
+        writable: false,
+        configurable: false,
+        value: function stringc(this: string, matches:(x:any) => boolean, color:string = 'r') : string {
+            var end = cOff;
+            var start:string = colorValueArray[colorNameArray.indexOf(color)];
+            return this.split('').map(x=> matches(x) ? `${start}${x}${end}`: `${x}`).join('');
         }
     });
 }
